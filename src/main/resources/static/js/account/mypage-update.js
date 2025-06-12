@@ -3,7 +3,7 @@ import {getDownloadURL, ref, uploadBytes} from "https://www.gstatic.com/firebase
 import {storage} from "../board/firebaseConfig.js";
 
 // API 엔드포인트 설정
-const API_BASE_URL = "/api/account"
+const API_BASE_URL = "http://127.0.0.1:8881/api/account"
 
 // 폼 상태 관리 - 원본 데이터와 현재 데이터 분리
 const originalData = {
@@ -51,7 +51,7 @@ let profileImageUpload = {
 
 async function getMemberInfoAPI() {
     try {
-        const response = await axios.get("/api/account/member", {
+        const response = await axios.get("http://127.0.0.1:8881/api/account/member", {
             timeout: 10000,
             headers: {
                 Accept: "application/json",
@@ -92,7 +92,7 @@ async function checkNicknameDuplicateAPI(nickname) {
 
 async function updateMemberAPI(userData) {
     try {
-        const response = await axios.put("/api/account/member", userData, {
+        const response = await axios.put("http://127.0.0.1:8881/api/account/member", userData, {
             timeout: 15000,
             headers: {
                 Accept: "application/json",
