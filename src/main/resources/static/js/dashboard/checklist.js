@@ -11,10 +11,10 @@ let editIndex = null;
 let itemToDeleteIndex = null;
 
 // Axios 기본 설정
-const token = localStorage.getItem('jwtToken');
+const token = localStorage.getItem('auth');
 
 axios.defaults.baseURL = 'http://127.0.0.1:8881';
-axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+axios.defaults.headers.common['selfitKosta'] = `Bearer ${token}`;
 
 axios.defaults.headers.common['Content-Type'] = 'application/json';
 
