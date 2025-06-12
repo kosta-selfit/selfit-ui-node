@@ -36,26 +36,19 @@ $(document).ready(function () {
 
         // API 요청 데이터
         const loginData = {
-            loginId: loginId,
-            loginPassword: loginPassword
+            email: loginId,
+            pw: loginPassword
         };
 
-        // Axios 요청
-        const formData = new URLSearchParams();
-        formData.append('loginId', loginData.loginId);
-        formData.append('loginPassword', loginData.loginPassword);
 
         // Axios 요청 (form-urlencoded 전송)
-        axios.post('/api/account/login-process', formData, {
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded'
-            }
+        axios.post('http://127.0.0.1:8881/api/account/login-process', {
+        "email": loginId,
+        "pw": loginPassword
         })
         .then(function (response) {
-            // 잠시 후 대시보드로 이동
-            setTimeout(function () {
-                window.location.href = '/dashboard';
-            }, 500);
+            console.log(response.headers);
+            localStorage.auth=response.headers.selfitkosta;
         })
         .catch(function (error) {
             console.error('로그인 실패:', error);

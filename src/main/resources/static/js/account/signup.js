@@ -1,7 +1,7 @@
 import {showAlertModal, showErrorModal, showSuccessModal} from './basic-modal.js';
 
 // API 엔드포인트 설정
-const API_BASE_URL = "/api/account"
+const API_BASE_URL = "http://127.0.0.1:8881/api/account"
 
 // 폼 상태 관리 (안전한 초기화)
 const formState = {
