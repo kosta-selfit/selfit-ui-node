@@ -22,7 +22,11 @@ $(() => {
 
     // 회원 정보 로드 함수
     function loadMemberInfo() {
-        axios.get('/api/account/member')
+        axios.get('http://127.0.0.1:8881/api/account/member', {
+            headers: {
+                'selfitKosta': localStorage.auth
+            }
+        })
             .then(function (response) {
                 const data = response.data;
                 // 회원 타입 저장
@@ -59,9 +63,10 @@ $(() => {
     function loadBookmarks(page) {
         const offset = (page - 1) * itemsPerPage;
 
-        axios.get(`/api/account/member/bookmarks/${offset}`, {
+        axios.get(`http://127.0.0.1:8881/api/account/member/bookmarks/${offset}`, {
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'selfitKosta': localStorage.auth
             },
             data: JSON.stringify(offset)
         })
