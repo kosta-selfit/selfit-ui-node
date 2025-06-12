@@ -1,4 +1,4 @@
-// 로그인한 회원 ID (테스트용 고정)
+// 로그인한 회원 ID
 const memberId = window.memberId;
 
 let calendar;
