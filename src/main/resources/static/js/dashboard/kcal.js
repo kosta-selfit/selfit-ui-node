@@ -3,8 +3,8 @@
 // -----------------------------
 // 1) 공통: Axios 기본 설정
 // -----------------------------
-axios.defaults.headers.common["Content-Type"] = "application/json";
-
+axios.defaults.headers.common['Content-Type'] = 'application/json';
+axios.defaults.withCredentials = true;
 // -----------------------------
 // 2) 연동할 백엔드 엔드포인트 정리
 // -----------------------------
@@ -41,7 +41,11 @@ axios.defaults.headers.common["Content-Type"] = "application/json";
 // --------------------------------------------------
 async function fetchBmr() {
     try {
-        const res = await axios.post("/api/dashboard/bmr", {});
+        const res = await axios.post("http://127.0.0.1:8881/api/dashboard/bmr", {
+            headers: {
+                'selfitKosta': localStorage.auth
+            }
+        });
         // { bmr: 1550 } 형태로 돌아온다고 가정
         return res.data.bmr;
     } catch (err) {
@@ -54,7 +58,9 @@ async function fetchBmr() {
 // --------------------------------------------------
 async function fetchYearIntake(year) {
     try {
-        const res = await axios.post("/api/dashboard/food/kcal/year", {
+        const res = await axios.post("http://127.0.0.1:8881/api/dashboard/food/kcal/year", {headers: {
+                'selfitKosta': localStorage.auth
+            },
             intakeYear: year,
         });
         return res.data; // [{ intakeDate, intakeSum }, ...]
@@ -65,7 +71,9 @@ async function fetchYearIntake(year) {
 
 async function fetchYearExercise(year) {
     try {
-        const res = await axios.post("/api/dashboard/exercise/kcal/year", {
+        const res = await axios.post("http://127.0.0.1:8881/api/dashboard/exercise/kcal/year", {headers: {
+                'selfitKosta': localStorage.auth
+            },
             exerciseYear: year,
         });
         return res.data; // [{ exerciseDate, exerciseSum }, ...]
@@ -79,7 +87,9 @@ async function fetchYearExercise(year) {
 // --------------------------------------------------
 async function fetchDateIntake(dateStr) {
     try {
-        const res = await axios.post("/api/dashboard/food/kcal", {
+        const res = await axios.post("http://127.0.0.1:8881/api/dashboard/food/kcal", {headers: {
+                'selfitKosta': localStorage.auth
+            },
             intakeDate: dateStr,
         });
         return res.data; // { intakeDate, intakeSum }
@@ -90,7 +100,9 @@ async function fetchDateIntake(dateStr) {
 
 async function fetchDateExercise(dateStr) {
     try {
-        const res = await axios.post("/api/dashboard/exercise/kcal", {
+        const res = await axios.post("http://127.0.0.1:8881/api/dashboard/exercise/kcal", {headers: {
+                'selfitKosta': localStorage.auth
+            },
             exerciseDate: dateStr,
         });
         return res.data; // { exerciseDate, exerciseSum }
