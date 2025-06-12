@@ -9,9 +9,12 @@ document.addEventListener("DOMContentLoaded", () => {
     // ------------------------------
     // 공통: Axios 요청 시 사용하는 헤더
     // ------------------------------
-    const JSON_HEADERS = {
-        "Content-Type": "application/json"
-    };
+    const token = localStorage.getItem('jwtToken');
+
+    axios.defaults.baseURL = 'http://127.0.0.1:8881';
+    axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+
+    axios.defaults.headers.common['Content-Type'] = 'application/json';
 
     // ------------------------------
     // 최대 칼로리 목표 (예: 2000kcal)
