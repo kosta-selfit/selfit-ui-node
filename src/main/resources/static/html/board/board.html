@@ -10,14 +10,16 @@
             href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css"
     />
     <link rel="stylesheet" href="/css/board/board.css">
-    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-    <script src="/js/board/board.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js" defer></script>
+    <script src="/js/layout-loader.js" defer></script>
+
+    <script src="/js/board/board.js" defer></script>
 </head>
 <body>
 <div id="container">
-    <div th:replace="~{fragments/layout :: header}"></div>
+    <div id="header"></div>
     <div id="section1">
-        <div th:replace="~{fragments/layout :: sidebar}"></div>
+        <div class="sideBar"></div>
         <div class="board-info">
             <div class="board-title">
                 <p></p>
