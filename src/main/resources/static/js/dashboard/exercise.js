@@ -3,8 +3,8 @@
 // -----------------------------
 // Axios 기본 설정
 // -----------------------------
-axios.defaults.headers.common['Content-Type'] = 'application/json';
 axios.defaults.withCredentials = true;
+axios.defaults.headers.common['Content-Type'] = 'application/json';
 
 // -----------------------------
 // 전역 변수 선언
@@ -61,7 +61,7 @@ const listEl = document.getElementById('autocomplete-list');
     }
 
     function fetchYearlyKcal(year) {
-        return axios.post('/api/dashboard/exercise/kcal/year', { exerciseYear: year })
+        return axios.post('http://127.0.0.1:8881/api/dashboard/exercise/kcal/year', { exerciseYear: year })
             .then(res => {
                 const rawList = res.data || [];
                 return rawList.map(item => ({
@@ -204,7 +204,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 while (cursor < endDate) {
                     const dateStr = cursor.toISOString().split('T')[0];
                     const req = axios
-                        .post('/api/dashboard/exercise/kcal', { exerciseDate: dateStr })
+                        .post('http://127.0.0.1:8881/api/dashboard/exercise/kcal', { exerciseDate: dateStr })
                         .then(res => {
                             const sumKcal = res.data.exerciseSum || 0;
                             if (sumKcal <= 0) {
@@ -247,7 +247,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
             // 노트 생성/조회
             try {
-                const noteRes = await axios.post('/api/dashboard/exercise/list', {
+                const noteRes = await axios.post('http://127.0.0.1:8881/api/dashboard/exercise/list', {
                     exerciseDate: selectedDate
                 });
                 exerciseNoteId = noteRes.data.exerciseNoteId;
@@ -259,7 +259,7 @@ document.addEventListener('DOMContentLoaded', function () {
             // 해당 날짜 운동 목록 조회
             let totalForClickedDay = 0;
             try {
-                const res2 = await axios.post('/api/dashboard/exercises', {
+                const res2 = await axios.post('http://127.0.0.1:8881/api/dashboard/exercises', {
                     exerciseDate: selectedDate
                 });
                 const serverList = res2.data || [];
@@ -318,7 +318,7 @@ nameInput.addEventListener('input', async function (e) {
     }
 
     try {
-        const res = await axios.post('/api/dashboard/exercise/openSearch', {
+        const res = await axios.post('http://127.0.0.1:8881/api/dashboard/exercise/openSearch', {
             keyword: keyword,
             pageNo: 1,
             numOfRows: 100
@@ -429,14 +429,14 @@ document.getElementById('add-exercise-btn').addEventListener('click', async func
         // — 수정 모드 로직 —
         try {
             const item = exerciseList[editIndex];
-            const putRes = await axios.put('/api/dashboard/exercise', {
+            const putRes = await axios.put('http://127.0.0.1:8881/api/dashboard/exercise', {
                 exerciseInfoId: item.id,
                 newMin: 분량
             });
 
             if (putRes.data.success) {
                 // (1) 서버에서 전체 목록 재조회
-                const listRes = await axios.post('/api/dashboard/exercises', {
+                const listRes = await axios.post('http://127.0.0.1:8881/api/dashboard/exercises', {
                     exerciseDate: selectedDate
                 });
                 const serverList = listRes.data || [];
@@ -504,11 +504,11 @@ document.getElementById('add-exercise-btn').addEventListener('click', async func
     };
 
     try {
-        const postRes = await axios.post('/api/dashboard/exercise', requestBody);
+        const postRes = await axios.post('http://127.0.0.1:8881/api/dashboard/exercise', requestBody);
 
         if (postRes.data.success) {
             // (1) 저장 성공 시 서버에서 전체 목록 재조회
-            const listRes = await axios.post('/api/dashboard/exercises', {
+            const listRes = await axios.post('http://127.0.0.1:8881/api/dashboard/exercises', {
                 exerciseDate: selectedDate
             });
             const serverList = listRes.data || [];
@@ -618,7 +618,7 @@ document.getElementById('confirm-delete-btn').addEventListener('click', async fu
     if (itemToDelete === null) return;
     const item = exerciseList[itemToDelete];
     try {
-        await axios.delete('/api/dashboard/exercise', { data: { exerciseInfoId: item.id } });
+        await axios.delete('http://127.0.0.1:8881/api/dashboard/exercise', { data: { exerciseInfoId: item.id } });
 
         // (1) 로컬 배열에서 제거
         exerciseList.splice(itemToDelete, 1);

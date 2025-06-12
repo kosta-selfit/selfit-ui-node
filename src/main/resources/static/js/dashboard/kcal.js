@@ -3,8 +3,8 @@
 // -----------------------------
 // 1) 공통: Axios 기본 설정
 // -----------------------------
-axios.defaults.headers.common["Content-Type"] = "application/json";
-
+axios.defaults.headers.common['Content-Type'] = 'application/json';
+axios.defaults.withCredentials = true;
 // -----------------------------
 // 2) 연동할 백엔드 엔드포인트 정리
 // -----------------------------
@@ -41,22 +41,38 @@ axios.defaults.headers.common["Content-Type"] = "application/json";
 // --------------------------------------------------
 async function fetchBmr() {
     try {
-        const res = await axios.post("/api/dashboard/bmr", {});
-        // { bmr: 1550 } 형태로 돌아온다고 가정
+        const res = await axios.post(
+            "http://127.0.0.1:8881/api/dashboard/bmr",
+            {},
+            {
+                headers: {
+                    'selfitKosta': localStorage.auth
+                },
+
+            }
+        );
         return res.data.bmr;
     } catch (err) {
+        console.error(err);
         throw new Error("BMR 조회 실패");
     }
 }
+
 
 // --------------------------------------------------
 // 4) 연도별 섭취·소모 데이터 조회 함수 (axios)
 // --------------------------------------------------
 async function fetchYearIntake(year) {
     try {
-        const res = await axios.post("/api/dashboard/food/kcal/year", {
+        const res = await axios.post("http://127.0.0.1:8881/api/dashboard/food/kcal/year", {
             intakeYear: year,
-        });
+        },{
+                headers: {
+                    'selfitKosta': localStorage.auth
+                },
+
+            }
+        );
         return res.data; // [{ intakeDate, intakeSum }, ...]
     } catch (err) {
         throw new Error("연도별 섭취 데이터 조회 실패");
@@ -65,9 +81,15 @@ async function fetchYearIntake(year) {
 
 async function fetchYearExercise(year) {
     try {
-        const res = await axios.post("/api/dashboard/exercise/kcal/year", {
+        const res = await axios.post("http://127.0.0.1:8881/api/dashboard/exercise/kcal/year", {
             exerciseYear: year,
-        });
+        },{
+                headers: {
+                    'selfitKosta': localStorage.auth
+                },
+
+            }
+        );
         return res.data; // [{ exerciseDate, exerciseSum }, ...]
     } catch (err) {
         throw new Error("연도별 운동 데이터 조회 실패");
@@ -79,9 +101,15 @@ async function fetchYearExercise(year) {
 // --------------------------------------------------
 async function fetchDateIntake(dateStr) {
     try {
-        const res = await axios.post("/api/dashboard/food/kcal", {
+        const res = await axios.post("http://127.0.0.1:8881/api/dashboard/food/kcal", {
             intakeDate: dateStr,
-        });
+        },{
+                headers: {
+                    'selfitKosta': localStorage.auth
+                },
+
+            }
+        );
         return res.data; // { intakeDate, intakeSum }
     } catch (err) {
         throw new Error("해당 날짜 섭취 데이터 조회 실패");
@@ -90,9 +118,15 @@ async function fetchDateIntake(dateStr) {
 
 async function fetchDateExercise(dateStr) {
     try {
-        const res = await axios.post("/api/dashboard/exercise/kcal", {
+        const res = await axios.post("http://127.0.0.1:8881/api/dashboard/exercise/kcal", {
             exerciseDate: dateStr,
-        });
+        },{
+                headers: {
+                    'selfitKosta': localStorage.auth
+                },
+
+            }
+        );
         return res.data; // { exerciseDate, exerciseSum }
     } catch (err) {
         throw new Error("해당 날짜 운동 데이터 조회 실패");
