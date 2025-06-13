@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-    axios.get('/html/fragments/layout.html')
+    axios.get(`${window.location.origin}/html/fragments/layout.html`)
         .then(response => {
             const doc = new DOMParser().parseFromString(response.data, 'text/html');
 
