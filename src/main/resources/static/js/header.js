@@ -62,7 +62,11 @@ async function fetchMemberInfo() {
     const loginBtn = document.querySelector('.login-btn');
 
     try {
-        const response = await axios.get('http://127.0.0.1:8881/api/account/member');
+        const response = await axios.get('http://127.0.0.1:8881/api/account/member',{
+            headers: {
+                'selfitKosta': localStorage.auth
+            }
+        });
         const userData = response.data;
         updateUserInfo(userData);
 
@@ -129,7 +133,11 @@ function setActiveDashboardItem() {
 // ─── 7) Community 카테고리 목록 가져오기 + active 처리 ───────────────────────────
 function fetchCategoryList() {
     // axios.get(...)을 바로 반환하도록 수정
-    return axios.get('http://127.0.0.1:8881/api/category')
+    return axios.get('http://127.0.0.1:8881/api/category',{
+        headers: {
+            'selfitKosta': localStorage.auth
+        }
+    })
         .then(res => {
             const categoryList = res.data;
             const communityMenu = document.querySelector('[data-group="community"] .submenu');
