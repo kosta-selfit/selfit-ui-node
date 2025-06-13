@@ -10,7 +10,7 @@ function handleLogout() {
         logoutBtn.disabled = true;
         logoutBtn.classList.add('loading');
 
-        axios.post('/account/logout')
+        axios.post('http://127.0.0.1:8881/html/account/logout')
             .then(() => {
                 memberInfo.style.display = 'none';
                 logoutBtn.style.display = 'none';
@@ -29,7 +29,7 @@ function handleLogout() {
 
 // 로그인 페이지로 이동하는 함수
 function handleLogin() {
-    window.location.href = '/account/login';
+    window.location.href = '/html/account/login.html';
 }
 
 // 사용자 정보 업데이트 함수
@@ -60,18 +60,24 @@ async function fetchMemberInfo() {
     const memberInfo = document.querySelector('.memberInfo');
     const logoutBtn = document.querySelector('.logout-btn');
     const loginBtn = document.querySelector('.login-btn');
+
     try {
-        const response = await fetch('/api/account/member');
-        if (!response.ok) {
-            throw new Error('회원 정보를 가져오는데 실패했습니다.');
-        }
-        const userData = await response.json();
+        const response = await axios.get('http://127.0.0.1:8881/api/account/member',{
+            headers: {
+                'selfitKosta': localStorage.auth
+            }
+        });
+        const userData = response.data;
         updateUserInfo(userData);
-        // 로그인 상태
+
+        console.log(userData)
+
+        // 로그인 상태 UI
         memberInfo.style.display = 'flex';
         logoutBtn.style.display = 'block';
         loginBtn.style.display = 'none';
     } catch (error) {
+        // 비로그인 상태 UI
         memberInfo.style.display = 'none';
         logoutBtn.style.display = 'none';
         loginBtn.style.display = 'block';
@@ -127,7 +133,11 @@ function setActiveDashboardItem() {
 // ─── 7) Community 카테고리 목록 가져오기 + active 처리 ───────────────────────────
 function fetchCategoryList() {
     // axios.get(...)을 바로 반환하도록 수정
-    return axios.get('/api/category')
+    return axios.get('http://127.0.0.1:8881/api/category',{
+        headers: {
+            'selfitKosta': localStorage.auth
+        }
+    })
         .then(res => {
             const categoryList = res.data;
             const communityMenu = document.querySelector('[data-group="community"] .submenu');

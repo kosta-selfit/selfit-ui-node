@@ -1,10 +1,10 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const token = localStorage.getItem('jwtToken');
+    const token = localStorage.getItem('auth');
 
     axios.defaults.baseURL = 'http://127.0.0.1:8881';
     axios.defaults.headers.common['selfitKosta'] = `Bearer ${token}`;
-
     axios.defaults.headers.common['Content-Type'] = 'application/json';
+    axios.defaults.withCredentials = true;
     const params  = new URLSearchParams(location.search);
     const boardId = parseInt(params.get('boardId'), 10);
     const commentsPerPage = 5;
