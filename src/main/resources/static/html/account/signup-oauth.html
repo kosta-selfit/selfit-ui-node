@@ -49,7 +49,7 @@
                                 </label>
                                 <div class="d-flex gap-2">
                                     <div class="input-wrapper flex-grow-1">
-                                        <input class="form-control" id="email" th:value="${email}" type="email">
+                                        <input class="form-control" id="email" value="#" type="email">
                                         <i class="bi bi-check-lg check-icon"></i>
                                     </div>
                                     <button class="btn btn-duplicate" id="emailCheck" type="button">
@@ -70,7 +70,7 @@
                                     <span class="required-mark">*</span>
                                 </label>
                                 <div class="input-wrapper">
-                                    <input class="form-control" id="name" th:value="${name}" type="text">
+                                    <input class="form-control" id="name" value="#" type="text">
                                     <i class="bi bi-check-lg check-icon"></i>
                                 </div>
                                 <div class="invalid-feedback"></div>
@@ -115,8 +115,7 @@
                             <div class="row mb-3">
                                 <div class="col-4">
                                     <label class="form-label text-muted">생년월일</label>
-                                    <input class="form-control" id="birthDate" maxlength="10" placeholder="YYYY.MM.DD"
-                                           type="text">
+                                    <input type="date" class="form-control" id="birthDate">
                                 </div>
                                 <div class="col-4">
                                     <label class="form-label text-muted">키(cm)</label>
