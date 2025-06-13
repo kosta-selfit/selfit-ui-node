@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<html lang="ko">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -24,6 +24,7 @@
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 
     <!-- dashboard.js (Axios를 사용하는 스크립트) -->
+    <script src="/js/layout-loader.js" defer></script>
     <script src="/js/dashboard/dashboard.js" defer></script>
 
     <script
@@ -33,9 +34,9 @@
 </head>
 <body>
 <div id="container">
-    <div th:replace="~{fragments/layout :: header}"></div>
+    <div id="header"></div>
     <div id="section1">
-        <div th:replace="~{fragments/layout :: sidebar}"></div>
+        <div class="sideBar"></div>
 
         <!-- 메인 콘텐츠 -->
         <div class="main-content">
