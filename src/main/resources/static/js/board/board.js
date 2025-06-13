@@ -56,7 +56,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             try {
-                await axios.post('/api/board/add', payload, {
+                await axios.post('http://127.0.0.1:8881/api/board/add', payload, {
                     headers: {'Content-Type': 'application/json'}
                 });
                 alert('게시글 등록 성공');
@@ -85,7 +85,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function fetchAndRender(page) {
         try {
-            const res = await axios.get('/api/board/list', {
+            const res = await axios.get('http://127.0.0.1:8881/api/board/list', {
                 params: {
                     page: page,
                     categoryId: categoryId,
@@ -95,6 +95,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
             const boards = res.data; // List<Board>
+            console.log(boards);
             let totalItems = 0;
             if (boards.length > 0) {
                 totalItems = boards[0].totalCount || 0;
@@ -120,22 +121,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // 2) 검색 결과가 없으면 빈 메시지 표시하고 리턴
         if (!Array.isArray(boards) || boards.length === 0) {
-            noResults.style.display = 'flex';
-            // 필요하다면 페이징도 숨김
-            // pagination.style.display = 'none';
+            if (noResults) {
+                noResults.style.display = 'flex';
+            }
             return;
         }
 
         // 3) 결과가 있을 때는 빈 메시지 숨기기
-        noResults.style.display = 'none';
-
+        if (noResults) {
+            noResults.style.display = 'none';
+        }
         // 4) 실제 게시글 아이템을 렌더링
         boards.forEach(board => {
             const item = document.createElement('div');
             item.className = 'board-list';
             item.innerHTML = `
                 <div class="board-title">
-                    <a href="/board/detail/${board.boardId}">
+                    <a href="boardDetail.html?boardId=${board.boardId}">
                         ${board.boardTitle}
                     </a>
                 </div>

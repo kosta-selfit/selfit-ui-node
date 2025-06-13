@@ -1,6 +1,12 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const parts = window.location.pathname.split('/');
-    const boardId = parseInt(parts.filter(p => p).pop(), 10);
+    const token = localStorage.getItem('jwtToken');
+
+    axios.defaults.baseURL = 'http://127.0.0.1:8881';
+    axios.defaults.headers.common['selfitKosta'] = `Bearer ${token}`;
+
+    axios.defaults.headers.common['Content-Type'] = 'application/json';
+    const params  = new URLSearchParams(location.search);
+    const boardId = parseInt(params.get('boardId'), 10);
     const commentsPerPage = 5;
     let currentCommentPage = 1;
 
@@ -29,7 +35,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // 수정 버튼 이벤트
             editBtn.addEventListener('click', () => {
-                window.location.href = `/board/edit/${boardId}`;
+                window.location.href = `/board/boardForm.html?boardId=${boardId}`;
             });
 
             // 삭제 버튼 이벤트
@@ -38,7 +44,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 try {
                     await axios.delete(`/api/board/delete/${boardId}`);
                     alert('삭제되었습니다.');
-                    window.location.href = `/board/list?categoryId=${board.categoryId}`;
+                    window.location.href = `/board/board.html?categoryId=${board.categoryId}`;
                 } catch (err) {
                     console.error('삭제 실패', err);
                     alert('삭제 중 오류가 발생했습니다.');
@@ -105,6 +111,7 @@ document.addEventListener('DOMContentLoaded', () => {
         })
             .then(response => {
                 const comments = response.data;
+                console.log(comments);
                 if (!Array.isArray(comments) || comments.length === 0) {
                     renderComments([]);
                     renderCommentPagination(0);
@@ -233,7 +240,6 @@ document.addEventListener('DOMContentLoaded', () => {
             await axios.post(
                 `/api/board/comment/add`,
                 {boardId: boardId, commentContent: content},
-                {headers: {'Content-Type': 'application/json'}}
             );
 
             // 댓글 등록 성공 시

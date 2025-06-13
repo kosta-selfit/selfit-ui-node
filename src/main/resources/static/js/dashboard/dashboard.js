@@ -1,4 +1,3 @@
-// dashboard.js
 document.addEventListener("DOMContentLoaded", () => {
     const ApexCharts = window.ApexCharts;
     // axios가 전역에 import/로드되어 있다고 가정합니다.
@@ -10,15 +9,14 @@ document.addEventListener("DOMContentLoaded", () => {
     // 공통: Axios 요청 시 사용하는 헤더
     // ------------------------------
     const token = localStorage.getItem('auth');
-    const memberId = Number(localStorage.getItem('memberId'));
-
-    const JSON_HEADERS = {
-        'Content-Type': 'application/json',
-        'selfitKosta': `Bearer ${token}`
-    };
+    // const memberId = Number(localStorage.getItem('memberId'));
 
     axios.defaults.baseURL = 'http://127.0.0.1:8881';
     axios.defaults.headers.common['selfitKosta'] = `Bearer ${token}`;
+    axios.defaults.headers.common['Content-Type'] = 'application/json';
+    axios.defaults.withCredentials = true;
+
+    const memberId = window.memberId;
 
     // axios.defaults.headers.common['Content-Type'] = 'application/json';
 
@@ -48,8 +46,7 @@ document.addEventListener("DOMContentLoaded", () => {
         try {
             const response = await axios.post(
                 "/api/dashboard/bmr",
-                {},
-                { headers: JSON_HEADERS }
+                {}
             );
             return response.data.bmr;
         } catch (err) {
@@ -61,8 +58,7 @@ document.addEventListener("DOMContentLoaded", () => {
         try {
             const response = await axios.post(
                 "/api/dashboard/food/kcal",
-                { intakeDate: dateStr, memberId },
-                { headers: JSON_HEADERS }
+                { intakeDate: dateStr, memberId }
             );
             // 백엔드에서 { intakeSum: number } 형태로 응답한다고 가정
             return response.data.intakeSum ?? 0;
@@ -75,8 +71,7 @@ document.addEventListener("DOMContentLoaded", () => {
         try {
             const response = await axios.post(
                 "/api/dashboard/exercise/kcal",
-                { exerciseDate: dateStr, memberId },
-                { headers: JSON_HEADERS }
+                { exerciseDate: dateStr, memberId }
             );
             // 백엔드에서 { exerciseSum: number } 형태로 응답한다고 가정
             return response.data.exerciseSum ?? 0;
@@ -92,8 +87,7 @@ document.addEventListener("DOMContentLoaded", () => {
         try {
             const response = await axios.post(
                 "/api/dashboard/foods",
-                { intakeDate: dateStr, memberId },
-                { headers: JSON_HEADERS }
+                { intakeDate: dateStr, memberId: memberId }
             );
             return response.data;
         } catch (err) {
@@ -105,8 +99,7 @@ document.addEventListener("DOMContentLoaded", () => {
         try {
             const response = await axios.post(
                 "/api/dashboard/exercises",
-                { exerciseDate: dateStr, memberId },
-                { headers: JSON_HEADERS }
+                { exerciseDate: dateStr, memberId: memberId }
             );
             return response.data;
         } catch (err) {
@@ -121,8 +114,7 @@ document.addEventListener("DOMContentLoaded", () => {
         try {
             const response = await axios.post(
                 "/api/dashboard/food/kcal/avg/year",
-                { intakeYear: parseInt(year) },
-                { headers: JSON_HEADERS }
+                { intakeYear: parseInt(year) }
             );
             return response.data;
         } catch (err) {
@@ -134,8 +126,7 @@ document.addEventListener("DOMContentLoaded", () => {
         try {
             const response = await axios.post(
                 "/api/dashboard/exercise/kcal/avg/year",
-                { exerciseYear: parseInt(year) },
-                { headers: JSON_HEADERS }
+                { exerciseYear: parseInt(year) }
             );
             return response.data;
         } catch (err) {
@@ -343,8 +334,7 @@ document.addEventListener("DOMContentLoaded", () => {
         try {
             const response = await axios.post(
                 "/api/dashboard/food/kcal/year",
-                { intakeYear: parseInt(year), memberId },
-                { headers: JSON_HEADERS }
+                { intakeYear: parseInt(year), memberId }
             );
             // 백엔드에서 [{ intakeDate: "YYYY-MM-DD", intakeSum: number }, …] 형태로 응답한다고 가정
             return response.data;
@@ -357,8 +347,7 @@ document.addEventListener("DOMContentLoaded", () => {
         try {
             const response = await axios.post(
                 "/api/dashboard/food/kcal/avg/year",
-                { intakeYear: parseInt(year) },
-                { headers: JSON_HEADERS }
+                { intakeYear: parseInt(year) }
             );
             // 백엔드에서 [{ intakeDate: "YYYY-MM-DD", avgIntakeKcal: number }, …] 형태로 응답한다고 가정
             return response.data;
@@ -371,8 +360,7 @@ document.addEventListener("DOMContentLoaded", () => {
         try {
             const response = await axios.post(
                 "/api/dashboard/exercise/kcal/year",
-                { exerciseYear: parseInt(year), memberId },
-                { headers: JSON_HEADERS }
+                { exerciseYear: parseInt(year), memberId }
             );
             // 백엔드에서 [{ exerciseDate: "YYYY-MM-DD", exerciseSum: number }, …] 형태로 응답한다고 가정
             return response.data;
@@ -385,8 +373,7 @@ document.addEventListener("DOMContentLoaded", () => {
         try {
             const response = await axios.post(
                 "/api/dashboard/exercise/kcal/avg/year",
-                { exerciseYear: parseInt(year) },
-                { headers: JSON_HEADERS }
+                { exerciseYear: parseInt(year) }
             );
             // 백엔드에서 [{ EXERCISE_DATE: "YYYY-MM-DD", avgKcal: number }, …] 형태로 응답한다고 가정
             return response.data;
@@ -673,8 +660,7 @@ document.addEventListener("DOMContentLoaded", () => {
         try {
             const response = await axios.post(
                 "/api/dashboard/checklist/items",
-                { checkDate: today, memberId },
-                { headers: JSON_HEADERS }
+                { checkDate: today, memberId }
             );
             return response.data;
         } catch (err) {
@@ -727,10 +713,8 @@ document.addEventListener("DOMContentLoaded", () => {
                         {
                             checkId: item.checkId,
                             isCheck: newValue
-                        },
-                        { headers: JSON_HEADERS }
+                        }
                     );
-                    console.log(`checkId=${item.checkId} 상태 변경: ${newValue}`);
                 } catch (err) {
                     console.error("체크 상태 업데이트 실패:", err);
                     // 업데이트 실패 시 다시 이전 상태로 되돌리기
