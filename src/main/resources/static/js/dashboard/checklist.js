@@ -1,6 +1,3 @@
-// 로그인한 회원 ID (테스트용 고정)
-const memberId = window.memberId;
-
 let calendar;
 let currentSelectedDate = null;
 let currentChecklistId = null;
@@ -11,12 +8,12 @@ let editIndex = null;
 let itemToDeleteIndex = null;
 
 // Axios 기본 설정
-const token = localStorage.getItem('jwtToken');
+const token = localStorage.getItem('auth');
 
 axios.defaults.baseURL = 'http://127.0.0.1:8881';
-axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-
+axios.defaults.headers.common['selfitKosta'] = `Bearer ${token}`;
 axios.defaults.headers.common['Content-Type'] = 'application/json';
+axios.defaults.withCredentials = true;
 
 function pruneChecklistData(year, month) {
     for (const key in checklistData) {
@@ -43,7 +40,7 @@ async function loadChecklistBetween(startDate, endDate) {
         }
 
         promises.push(
-            axios.post('/api/dashboard/checklist/items', { memberId, checkDate: dateStr })
+            axios.post('/api/dashboard/checklist/items', { checkDate: dateStr })
                 .then(res => {
                     checklistData[dateStr] = res.data.map(item => ({
                         checkId: item.checkId,
@@ -73,7 +70,7 @@ async function loadMonthlyChecklist(year, month) {
     for (let day = 1; day <= daysInMonth; day++) {
         const date = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
         promises.push(
-            axios.post('/api/dashboard/checklist/items', {memberId, checkDate: date})
+            axios.post('/api/dashboard/checklist/items', {checkDate: date})
                 .then(res => {
                     checklistData[date] = res.data.map(item => ({
                         checkId: item.checkId,
@@ -261,7 +258,6 @@ async function onDateClick(info) {
     try {
         // 1. 항목 요청
         const itemsRes = await axios.post('/api/dashboard/checklist/items', {
-            memberId,
             checkDate: currentSelectedDate
         });
 
@@ -286,7 +282,6 @@ async function onDateClick(info) {
             } else {
                 // ✅ 재조회: 항목은 없지만 checklist만 DB에 있을 수도 있으니 재요청해서 확인
                 const retryRes = await axios.post('/api/dashboard/checklist/items', {
-                    memberId,
                     checkDate: currentSelectedDate
                 });
 
@@ -297,7 +292,6 @@ async function onDateClick(info) {
                 } else {
                     // ✅ checklist도 항목도 없음 → 새로 생성
                     const createRes = await axios.post('/api/dashboard/checklist', {
-                        memberId,
                         checkDate: currentSelectedDate
                     });
                     currentChecklistId = createRes.data.checklistId;
