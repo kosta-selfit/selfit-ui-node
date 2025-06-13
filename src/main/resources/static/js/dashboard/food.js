@@ -671,14 +671,15 @@ document.getElementById('confirm-delete-btn').addEventListener('click', async fu
     const item = foodList[itemToDelete];
     try {
         // DELETE /api/dashboard/food
-        await axios.delete('http://127.0.0.1:8881/api/dashboard/food', { data: { foodInfoId: item.foodInfoId } },
-            {
-                headers: {
-                    'selfitKosta': localStorage.auth
-                },
-
+        await axios.delete('http://127.0.0.1:8881/api/dashboard/food', {
+            headers: {
+                'selfitKosta': localStorage.auth
+            },
+            data: {
+                foodInfoId: item.foodInfoId
             }
-        );
+        });
+
 
         // (1) 로컬 배열에서 제거
         foodList.splice(itemToDelete, 1);
