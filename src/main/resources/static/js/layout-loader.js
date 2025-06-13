@@ -8,10 +8,12 @@ document.addEventListener('DOMContentLoaded', () => {
             document.querySelector('.sideBar').innerHTML = doc.querySelector('.sideBar').innerHTML;
 
             // header.js 동적 로드
-            const headerScript = document.createElement('script');
-            headerScript.src = '/js/header.js';
-            headerScript.defer = true;
-            document.head.appendChild(headerScript);
+            setTimeout(() => {
+                const headerScript = document.createElement('script');
+                headerScript.src = '/js/header.js';
+                headerScript.onload = () => {};
+                document.body.appendChild(headerScript);
+            }, 0);
         })
         .catch(err => console.error('layout 로드 실패:', err));
 });
