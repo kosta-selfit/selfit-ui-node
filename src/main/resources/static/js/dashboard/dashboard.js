@@ -9,16 +9,11 @@ document.addEventListener("DOMContentLoaded", () => {
     // 공통: Axios 요청 시 사용하는 헤더
     // ------------------------------
     const token = localStorage.getItem('auth');
-    // const memberId = Number(localStorage.getItem('memberId'));
 
     axios.defaults.baseURL = 'http://127.0.0.1:8881';
     axios.defaults.headers.common['selfitKosta'] = `Bearer ${token}`;
     axios.defaults.headers.common['Content-Type'] = 'application/json';
     axios.defaults.withCredentials = true;
-
-    const memberId = window.memberId;
-
-    // axios.defaults.headers.common['Content-Type'] = 'application/json';
 
     // ------------------------------
     // 최대 칼로리 목표 (예: 2000kcal)
@@ -58,7 +53,7 @@ document.addEventListener("DOMContentLoaded", () => {
         try {
             const response = await axios.post(
                 "/api/dashboard/food/kcal",
-                { intakeDate: dateStr, memberId }
+                { intakeDate: dateStr }
             );
             // 백엔드에서 { intakeSum: number } 형태로 응답한다고 가정
             return response.data.intakeSum ?? 0;
@@ -71,7 +66,7 @@ document.addEventListener("DOMContentLoaded", () => {
         try {
             const response = await axios.post(
                 "/api/dashboard/exercise/kcal",
-                { exerciseDate: dateStr, memberId }
+                { exerciseDate: dateStr }
             );
             // 백엔드에서 { exerciseSum: number } 형태로 응답한다고 가정
             return response.data.exerciseSum ?? 0;
@@ -87,7 +82,7 @@ document.addEventListener("DOMContentLoaded", () => {
         try {
             const response = await axios.post(
                 "/api/dashboard/foods",
-                { intakeDate: dateStr, memberId: memberId }
+                { intakeDate: dateStr }
             );
             return response.data;
         } catch (err) {
@@ -99,7 +94,7 @@ document.addEventListener("DOMContentLoaded", () => {
         try {
             const response = await axios.post(
                 "/api/dashboard/exercises",
-                { exerciseDate: dateStr, memberId: memberId }
+                { exerciseDate: dateStr }
             );
             return response.data;
         } catch (err) {
@@ -334,7 +329,7 @@ document.addEventListener("DOMContentLoaded", () => {
         try {
             const response = await axios.post(
                 "/api/dashboard/food/kcal/year",
-                { intakeYear: parseInt(year), memberId }
+                { intakeYear: parseInt(year) }
             );
             // 백엔드에서 [{ intakeDate: "YYYY-MM-DD", intakeSum: number }, …] 형태로 응답한다고 가정
             return response.data;
@@ -360,7 +355,7 @@ document.addEventListener("DOMContentLoaded", () => {
         try {
             const response = await axios.post(
                 "/api/dashboard/exercise/kcal/year",
-                { exerciseYear: parseInt(year), memberId }
+                { exerciseYear: parseInt(year) }
             );
             // 백엔드에서 [{ exerciseDate: "YYYY-MM-DD", exerciseSum: number }, …] 형태로 응답한다고 가정
             return response.data;
@@ -660,7 +655,7 @@ document.addEventListener("DOMContentLoaded", () => {
         try {
             const response = await axios.post(
                 "/api/dashboard/checklist/items",
-                { checkDate: today, memberId }
+                { checkDate: today }
             );
             return response.data;
         } catch (err) {
