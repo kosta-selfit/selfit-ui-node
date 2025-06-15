@@ -1,21 +1,9 @@
 import {showErrorModal, showSuccessModal} from './basic-modal.js';
 
-function getQueryParams() {
-    const params = {};
-    const queryString = window.location.search.substring(1); // '?' 제거
-    const pairs = queryString.split('&');
-
-    for (const pair of pairs) {
-        if (pair) {
-            const [key, value] = pair.split('=');
-            params[decodeURIComponent(key)] = decodeURIComponent(value || '');
-        }
-    }
-
-    return params;
-}
-
-const params = getQueryParams();
+const emailKey = "email"
+const nameKey = "name"
+const email = sessionStorage.getItem(emailKey);
+const name = sessionStorage.getItem(nameKey);
 
 $(function () {
 
@@ -27,8 +15,13 @@ $(function () {
 
     const $wrapper = $('#email').closest('.input-wrapper');
     $wrapper.addClass('valid');
-    document.getElementById('email').value = params.email;
-    document.getElementById('name').value = params.name;
+
+    if (email === null || name === null) {
+        showErrorModal("잘못된 접근입니다.", "http://127.0.0.1:8880/html/account/login.html",true);
+    }
+
+    document.getElementById('email').value = email;
+    document.getElementById('name').value = name;
 });
 
 // API 엔드포인트 설정
@@ -36,8 +29,8 @@ const API_BASE_URL = 'http://127.0.0.1:8881/api/account';
 const redirect_url = "http://127.0.0.1:8880/html/dashboard/dashboard.html"
 // 폼 상태 관리 (비밀번호 관련 필드 제거)
 const formState = {
-    email: {value: params.email, valid: true, checked: true},
-    name: {value: params.name, valid: false},
+    email: {value: email, valid: true, checked: true},
+    name: {value: name, valid: false},
     nickname: {value: '', valid: false, checked: false},
     gender: null,
     birthDate: {value: null, valid: true}, // 빈 값이면 기본적으로 유효함
@@ -431,6 +424,19 @@ async function handleSignup() {
         const response = await signupAPI(userData);
 
         if (response.success) {
+            sessionStorage.removeItem(emailKey);
+            sessionStorage.removeItem(nameKey);
+            axios.post('http://127.0.0.1:8881/api/account/login-process', {
+                email: userData.email,
+                memberType: userData.memberType
+            })
+                .then(response => {
+                    localStorage.auth = response.headers.selfitkosta;
+                })
+                .catch(error => {
+                    console.error('Login error:', error);
+                });
+
             showSuccessModal("회원가입이 완료되었습니다!", redirect_url, true)
         } else {
             showErrorModal(response.message || "회원가입 중 오류가 발생했습니다.")

@@ -36,14 +36,11 @@ $(document).ready(() => {
             `width=${popupWidth},height=${popupHeight},left=${left},top=${top},resizable=yes,scrollbars=yes`,
         )
 
-        // 메시지 이벤트 리스너 등록
         window.addEventListener("message", handleAuthMessage)
 
-        // 팝업 창이 닫혔는지 확인하는 대신 타임아웃 설정
-        // 일정 시간 후에 이벤트 리스너 제거
         setTimeout(() => {
             window.removeEventListener("message", handleAuthMessage)
-        }, 300000) // 5분 후 리스너 제거 (필요에 따라 조정)
+        }, 300000)
 
         // 메시지 처리 함수
         function handleAuthMessage(event) {
@@ -64,6 +61,8 @@ $(document).ready(() => {
                     window.removeEventListener("message", handleAuthMessage);
                 } else if (event.data.redirect) {
                     // 실패 시 리다이렉트
+                    sessionStorage.setItem("email", event.data.email);
+                    sessionStorage.setItem("name", event.data.name);
                     window.location.href = event.data.redirect;
 
                     window.removeEventListener("message", handleAuthMessage);
