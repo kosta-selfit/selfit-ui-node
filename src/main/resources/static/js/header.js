@@ -10,22 +10,19 @@ function handleLogout() {
         logoutBtn.disabled = true;
         logoutBtn.classList.add('loading');
 
-        axios.post('http://127.0.0.1:8881/html/account/logout')
-            .then(() => {
-                memberInfo.style.display = 'none';
-                logoutBtn.style.display = 'none';
-                loginBtn.style.display = 'block';
-                alert('로그아웃되었습니다.');
-                window.location.reload();
-            })
-            .catch(error => {
-                alert('로그아웃 실패: ' + error.response.status);
-                logoutBtn.textContent = originalText;
-                logoutBtn.disabled = false;
-                logoutBtn.classList.remove('loading');
-            });
+        // JWT 토큰 삭제
+        localStorage.removeItem('auth');
+
+        // UI 초기화
+        memberInfo.style.display = 'none';
+        logoutBtn.style.display = 'none';
+        loginBtn.style.display = 'block';
+
+        alert('로그아웃되었습니다.');
+        window.location.href = '/html/account/login.html'; // 또는 메인 페이지
     }
 }
+
 
 // 로그인 페이지로 이동하는 함수
 function handleLogin() {
@@ -62,7 +59,11 @@ async function fetchMemberInfo() {
     const loginBtn = document.querySelector('.login-btn');
 
     try {
-        const response = await axios.get('http://127.0.0.1:8881/api/account/member');
+        const response = await axios.get('http://127.0.0.1:8881/api/account/member',{
+            headers: {
+                'selfitKosta': localStorage.auth
+            }
+        });
         const userData = response.data;
         updateUserInfo(userData);
 
@@ -129,7 +130,11 @@ function setActiveDashboardItem() {
 // ─── 7) Community 카테고리 목록 가져오기 + active 처리 ───────────────────────────
 function fetchCategoryList() {
     // axios.get(...)을 바로 반환하도록 수정
-    return axios.get('http://127.0.0.1:8881/api/category')
+    return axios.get('http://127.0.0.1:8881/api/category',{
+        headers: {
+            'selfitKosta': localStorage.auth
+        }
+    })
         .then(res => {
             const categoryList = res.data;
             const communityMenu = document.querySelector('[data-group="community"] .submenu');
@@ -193,7 +198,6 @@ function bindMenuLabelToggle() {
 }
 
 // ─── 9) DOMContentLoaded 이벤트 핸들러 ─────────────────────────────────────────
-document.addEventListener('DOMContentLoaded', () => {
     // (A) 사용자 정보 처리
     fetchMemberInfo();
 
@@ -208,4 +212,3 @@ document.addEventListener('DOMContentLoaded', () => {
         // (3) 메뉴 레이블 클릭 토글 바인딩
         bindMenuLabelToggle();
     });
-});

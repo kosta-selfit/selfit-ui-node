@@ -18,17 +18,14 @@ export async function initLayout() {
             console.warn('layout-container not found yet');
         }
 
-        // 3) 헤더 스크립트 로드 (한 번만)
-        if (!document.querySelector('script[src="/js/header.js"]')) {
-            const s = document.createElement('script');
-            s.type  = 'module';             // ← 여기 추가
-            s.src   = '/js/header.js';
-            document.head.appendChild(s);
-        }
-
-        // 4) 헤더가 DOM에 삽입된 직후, 토글·회원정보 바인딩 실행
-        await initHeader();
-
+        // header.js 동적 로드
+        setTimeout(() => {
+            const headerScript = document.createElement('script');
+            headerScript.type  = 'module';
+            headerScript.src = '/js/header.js';
+            headerScript.onload = () => {};
+            document.body.appendChild(headerScript);
+        }, 0);
     } catch (err) {
         console.error('layout 로드 실패:', err);
     }

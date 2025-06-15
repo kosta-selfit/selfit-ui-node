@@ -5,6 +5,7 @@
 // -----------------------------
 axios.defaults.withCredentials = true;
 axios.defaults.headers.common['Content-Type'] = 'application/json';
+axios.defaults.headers.common['selfitKosta'] = localStorage.auth;
 
 // -----------------------------
 // 전역 변수 선언
@@ -23,6 +24,7 @@ let selectedName = "";           // 자동완성에서 선택된 운동명
 const nameInput = document.getElementById('exercise-name');
 const amountInput = document.getElementById('exercise-duration');
 const listEl = document.getElementById('autocomplete-list');
+
 
 // =======================================
 // 1) ApexCharts를 이용한 “운동 그래프” 초기화
@@ -61,7 +63,14 @@ const listEl = document.getElementById('autocomplete-list');
     }
 
     function fetchYearlyKcal(year) {
-        return axios.post('http://127.0.0.1:8881/api/dashboard/exercise/kcal/year', { exerciseYear: year })
+        return axios.post('http://127.0.0.1:8881/api/dashboard/exercise/kcal/year', { exerciseYear: year },
+            {
+                headers: {
+                    'selfitKosta': localStorage.auth
+                },
+
+            }
+        )
             .then(res => {
                 const rawList = res.data || [];
                 return rawList.map(item => ({
@@ -204,7 +213,14 @@ document.addEventListener('DOMContentLoaded', function () {
                 while (cursor < endDate) {
                     const dateStr = cursor.toISOString().split('T')[0];
                     const req = axios
-                        .post('http://127.0.0.1:8881/api/dashboard/exercise/kcal', { exerciseDate: dateStr })
+                        .post('http://127.0.0.1:8881/api/dashboard/exercise/kcal', { exerciseDate: dateStr },
+                    {
+                        headers: {
+                            'selfitKosta': localStorage.auth
+                        },
+
+                    }
+                )
                         .then(res => {
                             const sumKcal = res.data.exerciseSum || 0;
                             if (sumKcal <= 0) {
@@ -249,7 +265,14 @@ document.addEventListener('DOMContentLoaded', function () {
             try {
                 const noteRes = await axios.post('http://127.0.0.1:8881/api/dashboard/exercise/list', {
                     exerciseDate: selectedDate
-                });
+                },
+                    {
+                        headers: {
+                            'selfitKosta': localStorage.auth
+                        },
+
+                    }
+                );
                 exerciseNoteId = noteRes.data.exerciseNoteId;
             } catch (err) {
                 console.warn("운동 노트 생성 또는 조회 실패:", err.response?.data?.message || err);
@@ -261,7 +284,14 @@ document.addEventListener('DOMContentLoaded', function () {
             try {
                 const res2 = await axios.post('http://127.0.0.1:8881/api/dashboard/exercises', {
                     exerciseDate: selectedDate
-                });
+                },
+                    {
+                        headers: {
+                            'selfitKosta': localStorage.auth
+                        },
+
+                    }
+                );
                 const serverList = res2.data || [];
                 exerciseList = serverList.map(item => ({
                     id: item.exerciseInfoId,
@@ -321,8 +351,15 @@ nameInput.addEventListener('input', async function (e) {
         const res = await axios.post('http://127.0.0.1:8881/api/dashboard/exercise/openSearch', {
             keyword: keyword,
             pageNo: 1,
-            numOfRows: 100
-        });
+            numOfRows: 100,
+        },
+            {
+                headers: {
+                    'selfitKosta': localStorage.auth
+                },
+
+            }
+        );
         const items = res.data || []; // 예: [ { "단위체중당에너지소비량":4.5, "운동명":"걷기" }, … ]
 
         if (!items.length) {
@@ -438,7 +475,14 @@ document.getElementById('add-exercise-btn').addEventListener('click', async func
                 // (1) 서버에서 전체 목록 재조회
                 const listRes = await axios.post('http://127.0.0.1:8881/api/dashboard/exercises', {
                     exerciseDate: selectedDate
-                });
+                },
+                    {
+                        headers: {
+                            'selfitKosta': localStorage.auth
+                        },
+
+                    }
+                );
                 const serverList = listRes.data || [];
                 exerciseList = serverList.map(e => ({
                     id: e.exerciseInfoId,
@@ -504,13 +548,27 @@ document.getElementById('add-exercise-btn').addEventListener('click', async func
     };
 
     try {
-        const postRes = await axios.post('http://127.0.0.1:8881/api/dashboard/exercise', requestBody);
+        const postRes = await axios.post('http://127.0.0.1:8881/api/dashboard/exercise', requestBody,
+            {
+                headers: {
+                    'selfitKosta': localStorage.auth
+                },
+
+            }
+        );
 
         if (postRes.data.success) {
             // (1) 저장 성공 시 서버에서 전체 목록 재조회
             const listRes = await axios.post('http://127.0.0.1:8881/api/dashboard/exercises', {
                 exerciseDate: selectedDate
-            });
+            },
+                {
+                    headers: {
+                        'selfitKosta': localStorage.auth
+                    },
+
+                }
+            );
             const serverList = listRes.data || [];
             exerciseList = serverList.map(e => ({
                 id: e.exerciseInfoId,

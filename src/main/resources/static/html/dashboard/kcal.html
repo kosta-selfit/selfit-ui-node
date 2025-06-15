@@ -1,9 +1,10 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<html lang="ko">
 <head>
     <meta charset="UTF-8">
     <title>칼로리 계산</title>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="/js/layout-loader.js" defer></script>
     <link rel="stylesheet" href="/css/dashboard/kcal.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/main.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
@@ -13,10 +14,10 @@
 <body>
 <div id="container">
     <!-- 헤더 영역 -->
-    <div th:replace="~{fragments/layout :: header}"></div>
+    <div id="header"></div>
     <!-- 사이드바 영역 -->
     <div id="section1">
-        <div th:replace="~{fragments/layout :: sidebar}"></div>
+        <div class="sideBar"></div>
         <!-- 메인 콘텐츠 영역 -->
         <div class="main-content">
             <!-- 상단 기록 비교 차트 -->
@@ -25,7 +26,7 @@
                     <h2 class="card-title">칼로리 계산</h2>
                     <div class="chart-header">
                         <div class="chart-selectors">
-                            <select class="year-selector">
+                            <select id="yearSelect" class="year-selector">
                                 <option>2025년</option>
                                 <option>2024년</option>
                                 <option>2023년</option>

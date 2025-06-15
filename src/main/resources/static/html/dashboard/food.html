@@ -17,10 +17,10 @@
 <body>
 <div id="container">
     <!-- 헤더 영역 -->
-    <div th:replace="~{fragments/layout :: header}"></div>
+    <div id="header"></div>
     <!-- 사이드바 영역 -->
     <div id="section1">
-        <div th:replace="~{fragments/layout :: sidebar}"></div>
+        <div class="sideBar"></div>
         <!-- 메인 콘텐츠 영역 -->
         <div class="main-content">
             <!-- 섭취 칼로리 차트 영역 - 카드 스타일 -->
@@ -123,6 +123,8 @@
 <!-- Axios -->
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <!-- JS -->
+<script src="/js/layout-loader.js"></script>
 <script src="/js/dashboard/food.js"></script>
+
 </body>
 </html>
