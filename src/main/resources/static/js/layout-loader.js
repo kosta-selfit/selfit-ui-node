@@ -1,19 +1,32 @@
-document.addEventListener('DOMContentLoaded', () => {
-    axios.get(`${window.location.origin}/html/fragments/layout.html`)
-        .then(response => {
-            const doc = new DOMParser().parseFromString(response.data, 'text/html');
+// /static/js/layout-loader.js
+import axios from 'https://cdn.jsdelivr.net/npm/axios@1.6.8/+esm';
+import { initHeader } from '/js/header.js';
 
-            // 조각 삽입
-            document.querySelector('#header').innerHTML  = doc.querySelector('#header').innerHTML;
-            document.querySelector('.sideBar').innerHTML = doc.querySelector('.sideBar').innerHTML;
+export async function initLayout() {
+    try {
+        // 1) layout fragment 가져오기
+        const res = await axios.get('/html/fragments/layout.html');
+        const doc = new DOMParser().parseFromString(res.data, 'text/html');
 
-            // header.js 동적 로드
-            setTimeout(() => {
-                const headerScript = document.createElement('script');
-                headerScript.src = '/js/header.js';
-                headerScript.onload = () => {};
-                document.body.appendChild(headerScript);
-            }, 0);
-        })
-        .catch(err => console.error('layout 로드 실패:', err));
-});
+        // 2) 헤더 · 사이드바 주입
+        const headerEl = document.querySelector('#header');
+        const sideEl   = document.querySelector('.sideBar');
+        if (headerEl && sideEl) {
+            headerEl.innerHTML = doc.querySelector('#header').innerHTML;
+            sideEl.innerHTML   = doc.querySelector('.sideBar').innerHTML;
+        } else {
+            console.warn('layout-container not found yet');
+        }
+
+        // header.js 동적 로드
+        setTimeout(() => {
+            const headerScript = document.createElement('script');
+            headerScript.type  = 'module';
+            headerScript.src = '/js/header.js';
+            headerScript.onload = () => {};
+            document.body.appendChild(headerScript);
+        }, 0);
+    } catch (err) {
+        console.error('layout 로드 실패:', err);
+    }
+}

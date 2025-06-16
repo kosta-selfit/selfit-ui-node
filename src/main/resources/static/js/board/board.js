@@ -1,183 +1,135 @@
-document.addEventListener('DOMContentLoaded', () => {
-    const urlParams = new URLSearchParams(location.search);
-    const categoryId = parseInt(urlParams.get('categoryId')) || 1;
-    const pageSize = 10;
-    let currentPage = 1;
-    let currentSort = 'recent';
-    let currentKeyword = '';
+import axios from 'https://cdn.jsdelivr.net/npm/axios@1.6.8/+esm';
+console.log('board.js 진입');
 
-    const sortMap = {
-        '최신순': 'recent',
-        '조회순': 'views',
+axios.defaults.baseURL = 'http://127.0.0.1:8881';
+axios.defaults.headers.common['Content-Type'] = 'application/json';
+
+(async function initBoard() {
+    // — 해시 파라미터 파싱
+    function parseHash() {
+        const [, q = ''] = window.location.hash.split('?');
+        return new URLSearchParams(q);
+    }
+    const hashParams = parseHash();
+    const categoryId   = parseInt(hashParams.get('categoryId'), 10) || 2;
+
+    // — 상태
+    let currentPage    = 1;
+    let currentSort    = 'recent';
+    let currentKeyword = '';
+    const pageSize     = 10;
+
+    // — DOM 엘리먼트
+    const listContainer = document.querySelector('.board-list');
+    const paginationEl  = document.querySelector('.board-pagination');
+    const searchInput   = document.querySelector('.searchTotal');
+    const sortRadios    = document.querySelectorAll('input[name="sort"]');
+    const titleEl       = document.querySelector('.board-title p');
+    const writeBtn      = document.getElementById('writeBtn');
+
+    // — 전역 페이지 함수 노출
+    window.goPage = page => {
+        currentPage = page;
+        fetchAndRender();
     };
 
-    // --- 검색창 요소 가져오기 ───────────────────────────────────────
-    const searchInput = document.querySelector('.searchTotal');
+    // — 이벤트 바인딩
     if (searchInput) {
-        // Enter 키 눌렀을 때 검색어를 currentKeyword에 반영하고 1페이지 다시 로드
-        searchInput.addEventListener('keydown', (e) => {
+        searchInput.addEventListener('keydown', e => {
             if (e.key === 'Enter') {
                 e.preventDefault();
                 currentKeyword = searchInput.value.trim();
                 currentPage = 1;
-                fetchAndRender(currentPage);
-                searchInput.value = '';
+                fetchAndRender();
             }
         });
     }
-
-    // --- 게시글 추가 (Add) – AJAX POST 처리 ----
-    const postForm = document.getElementById('postForm');
-    if (postForm) {
-        postForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-
-            const titleInput = postForm.querySelector('input[name="postTitle"]');
-            const contentInput = postForm.querySelector('textarea[name="postContents"]');
-            const selectEl = postForm.querySelector('select[name="categoryId"]');
-
-            const payload = {
-                boardTitle: titleInput.value.trim(),
-                boardContent: contentInput.value.trim(),
-                categoryId: parseInt(selectEl.value)
-            };
-
-            if (!payload.boardTitle) {
-                alert('제목을 입력해주세요.');
-                return;
-            }
-            if (!payload.boardContent) {
-                alert('내용을 입력해주세요.');
-                return;
-            }
-            if (!payload.categoryId) {
-                alert('카테고리를 선택해주세요.');
-                return;
-            }
-
-            try {
-                await axios.post('http://127.0.0.1:8881/api/board/add', payload, {
-                    headers: {'Content-Type': 'application/json'}
-                });
-                alert('게시글 등록 성공');
-                window.location.href = `/board/list?categoryId=${payload.categoryId}`;
-            } catch (err) {
-                console.error('게시글 등록 실패', err);
-                if (err.response) {
-                    alert('등록 실패: ' + err.response.status);
-                } else {
-                    alert('등록 중 네트워크 오류가 발생했습니다.');
-                }
-            }
-        });
-    }
-
-    // 정렬 옵션 변경 시 처리
-    document.querySelectorAll('input[name="sort"]').forEach(radio => {
-        radio.addEventListener('click', () => {
-            const selectedSort = sortMap[radio.value] || 'recent';
-            if (currentSort !== selectedSort) {
-                currentSort = selectedSort;
-                fetchAndRender(currentPage);
-            }
+    sortRadios.forEach(radio => {
+        radio.addEventListener('change', () => {
+            currentSort = (radio.value === '조회순' ? 'views' : 'recent');
+            currentPage = 1;
+            fetchAndRender();
         });
     });
+    if (writeBtn) {
+        writeBtn.addEventListener('click', () => {
+            window.location.hash = `/board/write?categoryId=${categoryId}`;
+        });
+    }
 
-    async function fetchAndRender(page) {
+    // — 데이터 가져와 렌더링
+    async function fetchAndRender() {
         try {
-            const res = await axios.get('http://127.0.0.1:8881/api/board/list', {
+            const res = await axios.get('/api/board/list', {
                 params: {
-                    page: page,
-                    categoryId: categoryId,
+                    categoryId,
+                    page:    currentPage,
                     keyword: currentKeyword,
                     sortOrder: currentSort
                 }
             });
+            const boards    = res.data;
+            const totalItems = boards.length ? boards[0].totalCount : 0;
 
-            const boards = res.data; // List<Board>
-            console.log(boards);
-            let totalItems = 0;
-            if (boards.length > 0) {
-                totalItems = boards[0].totalCount || 0;
+            // 제목 업데이트
+            if (boards.length && titleEl) {
+                titleEl.textContent = boards[0].categoryName;
             }
 
-            const titleElement = document.querySelector('.board-title p');
-            if (titleElement && boards.length > 0) {
-                titleElement.textContent = boards[0].categoryName;
-            }
-
-            renderPage(boards);
-            renderPagination(page, totalItems);
+            renderList(boards);
+            renderPagination(totalItems);
         } catch (err) {
-            console.error('데이터 불러오기 실패', err);
+            console.error('게시글 로드 실패', err);
+            listContainer.innerHTML = '<p class="text-center">게시글을 불러올 수 없습니다.</p>';
         }
     }
 
-    function renderPage(boards) {
-        const list = document.querySelector('.board-list');
-        const noResults = document.querySelector('.no-results-message');
-        const pagination = document.querySelector('.board-pagination');
-        list.innerHTML = '';
+    function renderList(boards) {
+        if (!listContainer) return;
+        listContainer.innerHTML = '';
 
-        // 2) 검색 결과가 없으면 빈 메시지 표시하고 리턴
-        if (!Array.isArray(boards) || boards.length === 0) {
-            if (noResults) {
-                noResults.style.display = 'flex';
-            }
+        if (!boards.length) {
+            listContainer.innerHTML = '<p class="no-results-message text-center">등록된 게시글이 없습니다.</p>';
             return;
         }
 
-        // 3) 결과가 있을 때는 빈 메시지 숨기기
-        if (noResults) {
-            noResults.style.display = 'none';
-        }
-        // 4) 실제 게시글 아이템을 렌더링
-        boards.forEach(board => {
+        boards.forEach(b => {
             const item = document.createElement('div');
-            item.className = 'board-list';
+            item.className = 'board-item d-flex align-items-center py-2';
             item.innerHTML = `
-                <div class="board-title">
-                    <a href="boardDetail.html?boardId=${board.boardId}">
-                        ${board.boardTitle}
-                    </a>
-                </div>
-                <div class="board-author">${board.nickName}</div>
-                <div class="board-views">${board.viewCount}</div>
-                <div class="board-date">${board.createdDate?.substring(2).replace(/-/g, '.')}</div>
-            `;
-            list.appendChild(item);
+        <div class="flex-fill">
+          <a href="#/board/detail?boardId=${b.boardId}&categoryId=${categoryId}">
+            ${b.boardTitle}
+          </a>
+        </div>
+        <div class="mx-3">${b.nickName}</div>
+        <div class="mx-3">${b.viewCount}</div>
+        <div class="mx-3">${b.createdDate.split('T')[0]}</div>
+      `;
+            listContainer.appendChild(item);
         });
     }
 
-    function renderPagination(page, totalItems) {
+    function renderPagination(totalItems) {
+        if (!paginationEl) return;
         const totalPages = Math.ceil(totalItems / pageSize);
-        const pagination = document.querySelector('.board-pagination');
-        pagination.innerHTML = '';
+        let html = '';
 
-        if (page > 1) {
-            pagination.innerHTML += `
-                <button onclick="goPage(1)">&lt;&lt;</button>
-                <button onclick="goPage(${page - 1})">&lt;</button>
-            `;
+        if (currentPage > 1) {
+            html += `<button onclick="goPage(1)">&laquo;</button>`;
+            html += `<button onclick="goPage(${currentPage - 1})">&lt;</button>`;
         }
         for (let i = 1; i <= totalPages; i++) {
-            pagination.innerHTML += `
-                <button class="${i === page ? 'current' : ''}"
-                        onclick="goPage(${i})">${i}</button>
-            `;
+            html += `<button class="${i === currentPage ? 'current' : ''}" onclick="goPage(${i})">${i}</button>`;
         }
-        if (page < totalPages) {
-            pagination.innerHTML += `
-                <button onclick="goPage(${page + 1})">&gt;</button>
-                <button onclick="goPage(${totalPages})">&gt;&gt;</button>
-            `;
+        if (currentPage < totalPages) {
+            html += `<button onclick="goPage(${currentPage + 1})">&gt;</button>`;
+            html += `<button onclick="goPage(${totalPages})">&raquo;</button>`;
         }
+
+        paginationEl.innerHTML = html;
     }
 
-    window.goPage = function (page) {
-        currentPage = page;
-        fetchAndRender(page);
-    };
-
-    fetchAndRender(currentPage);
-});
+    // — 최초 호출
+    fetchAndRender();
+})();
