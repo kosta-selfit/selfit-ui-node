@@ -567,7 +567,7 @@ function handleProfileImageChange(e) {
 }
 
 function handleCancel() {
-    showAlertModal("수정을 취소하시겠습니까? 변경사항이 저장되지 않습니다.", "/account/mypage")
+    showAlertModal("수정을 취소하시겠습니까? 변경사항이 저장되지 않습니다.", "/html/account/mypage.html")
 }
 
 async function handleSave() {
