@@ -6,6 +6,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const action = this.getAttribute('data-action');
 
             if (action === 'dashboard') {
+
                 window.location.href = '/dashboard';
 
             } else if (action === 'community') {
@@ -25,6 +26,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     .catch(err => {
                         console.error('카테고리 조회 실패:', err);
                     });
+
             }
         });
     });
