@@ -3,6 +3,7 @@ import {showAlertModal, showSuccessModal, showErrorModal} from './basic-modal.js
 $(() => {
     // API 기본 경로 설정
     var board_api_base = '/board/detail';
+    const baseUrl = 'http://127.0.0.1:8881'
 
     // 북마크 데이터와 페이지네이션 변수
     let bookmarkData = [];
@@ -22,9 +23,9 @@ $(() => {
 
     // 회원 정보 로드 함수
     function loadMemberInfo() {
-        axios.get('http://127.0.0.1:8881/api/account/member', {
+        axios.get(baseUrl + '/api/account/member', {
             headers: {
-                'selfitKosta': localStorage.auth
+                selfitKosta: `Bearer ${localStorage.auth}`,
             }
         })
             .then(function (response) {
@@ -63,10 +64,10 @@ $(() => {
     function loadBookmarks(page) {
         const offset = (page - 1) * itemsPerPage;
 
-        axios.get(`http://127.0.0.1:8881/api/account/member/bookmarks/${offset}`, {
+        axios.get(baseUrl + `/api/account/member/bookmarks/${offset}`, {
             headers: {
                 'Content-Type': 'application/json',
-                'selfitKosta': localStorage.auth
+                selfitKosta: `Bearer ${localStorage.auth}`,
             },
             data: JSON.stringify(offset)
         })
@@ -142,32 +143,39 @@ $(() => {
     $(document).on("click", ".bookmark-item", function () {
         const boardId = $(this).data('board-id');
         if (boardId) {
-            window.location.href = `${board_api_base}/${boardId}`;
+            window.location.href = baseUrl + `${board_api_base}/${boardId}`;
         }
     });
 
     // 회원탈퇴 함수 (실제 API 호출)
     function handleWithdraw() {
-        axios.delete('/api/account/member')
+        axios.delete(`${baseUrl}/api/account/member`, {
+            headers: {
+                selfitKosta: `Bearer ${localStorage.auth}`,
+                'Content-Type': 'application/json'
+            }
+        })
             .then(function (response) {
                 const data = response.data;
                 if (data.success) {
-                    showSuccessModal("회원탈퇴가 완료되었습니다.", "/account/login", true);
+                    localStorage.removeItem('auth');
+                    showSuccessModal("회원탈퇴가 완료되었습니다.", "/html/account/login.html", true);
                 } else {
                     showErrorModal("회원탈퇴 처리 중 오류가 발생했습니다.");
                 }
             })
             .catch(function (error) {
-                console.error('회원탈퇴 실패:', error);
-                showErrorModal("회원탈퇴 처리 중 오류가 발생했습니다.");
+                showErrorModal("서버 요청 중 오류가 발생했습니다.");
+                console.error(error);
             });
     }
 
     // 비밀번호 확인 함수 (실제 API 호출)
     function verifyPassword(password) {
         return new Promise((resolve, reject) => {
-            axios.post('/api/account/member/check-pw', {'pw': password}, {
+            axios.post(baseUrl + '/api/account/member/check-pw', {'pw': password}, {
                 headers: {
+                    selfitKosta: `Bearer ${localStorage.auth}`,
                     'Content-Type': 'application/json'
                 }
             })
@@ -217,7 +225,7 @@ $(() => {
                     handleWithdraw();
                 } else if (currentAction === "edit") {
                     // 회원정보 수정 페이지로 이동
-                    window.location.href = "/account/mypage-update";
+                    window.location.href = "/html/account/mypage-update.html";
                 }
             })
             .catch((error) => {
@@ -254,7 +262,7 @@ $(() => {
     $("#editBtn").on("click", () => {
         // memberType이 DEFAULT가 아니면 비밀번호 확인 생략
         if (memberType !== "DEFAULT") {
-            window.location.href = "/account/mypage-update";
+            window.location.href = "/html/account/mypage-update.html";
         } else {
             currentAction = "edit";
             resetPasswordModal();

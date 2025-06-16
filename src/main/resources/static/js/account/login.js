@@ -113,7 +113,6 @@ $(document).ready(() => {
                 window.location.href = redirect_url;
             })
             .catch((error) => {
-                console.error("로그인 실패:", error)
                 let errorMessage = "로그인에 실패했습니다."
 
                 if (error.response) {
