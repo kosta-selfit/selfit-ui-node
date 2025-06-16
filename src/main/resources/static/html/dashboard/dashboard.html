@@ -24,7 +24,10 @@
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 
     <!-- dashboard.js (Axios를 사용하는 스크립트) -->
-    <script src="/js/layout-loader.js" defer></script>
+    <script type="module" defer>
+        import { initLayoutStatic } from '/js/layout-loader.js';
+        document.addEventListener('DOMContentLoaded', initLayoutStatic);
+    </script>
     <script src="/js/dashboard/dashboard.js" defer></script>
 
     <script

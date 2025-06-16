@@ -168,9 +168,8 @@ html, body {
 
 .sideBar {
     width: 20%;
-    height: 100%;
+    height: auto;
     border-right: 1px solid var(--bg2);
-    float: left;
 }
 
 /* 토글 아이콘 기본 (숨김 불필요 시 그대로) */

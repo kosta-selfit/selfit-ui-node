@@ -1,4 +1,4 @@
-console.log('✅ boardDetail.js 진입');
+console.log('boardDetail.js 진입');
 import axios from 'https://cdn.jsdelivr.net/npm/axios@1.6.8/+esm';
 axios.defaults.baseURL = 'http://127.0.0.1:8881';
 axios.defaults.headers.common['Content-Type'] = 'application/json';
@@ -31,32 +31,50 @@ function init() {
     const bookmarkBtn = document.querySelector('.board-footer-set .btn');
     const bookmarkIcon = bookmarkBtn.querySelector('i');
 
-    axios.get(`/api/board/${boardId}`)
+    axios.get(
+        `/api/board/${boardId}`,
+        {
+            headers: {
+                selfitKosta: token ? `Bearer ${token}` : ''
+            }
+        }
+    )
         .then(response => {
-            const board = response.data.board;
-            const currentUserId = response.data.currentUserId;
-            const isBookmarked = response.data.myBookmarkCount > 0;
+            const board           = response.data.board;
+            const currentUserId   = response.data.currentUserId;
+            const isBookmarked    = response.data.myBookmarkCount > 0;
 
+            // 소유자 버튼 표시
             if (board.memberId === currentUserId) {
                 ownerButtons.style.display = 'block';
             }
 
+            // 수정 버튼
             editBtn.onclick = () => {
-                window.location.href = `/html/spa.html#/board/edit?boardId=${boardId}`;
+                location.hash = `/board/edit?boardId=${boardId}`;
             };
 
+            // 삭제 버튼
             deleteBtn.onclick = async () => {
                 if (!confirm('정말 삭제하시겠습니까?')) return;
                 try {
-                    await axios.delete(`/api/board/delete/${boardId}`);
+                    await axios.delete(
+                        `/api/board/delete/${boardId}`,
+                        {
+                            headers: {
+                                selfitKosta: token ? `Bearer ${token}` : ''
+                            }
+                        }
+                    );
                     alert('삭제되었습니다.');
-                    window.location.href = `/html/spa.html#/board/list?categoryId=${board.categoryId}`;
+                    location.hash = `/board/list?categoryId=${board.categoryId}`;
                 } catch (err) {
                     alert('삭제 중 오류 발생');
                     console.error(err);
                 }
             };
 
+            // 화면 렌더링
             renderBoardDetail(board);
             fetchAndRenderComments(currentCommentPage);
             initBookmarkButton(bookmarkBtn, bookmarkIcon, boardId, isBookmarked);
@@ -64,7 +82,6 @@ function init() {
         .catch(err => {
             console.error("게시글 불러오기 실패", err);
         });
-
     if (commentBtn) {
         commentBtn.onclick = () => addComment(commentInput, elCommentCount, commentList, pagination);
     }

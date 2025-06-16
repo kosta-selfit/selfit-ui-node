@@ -1,214 +1,181 @@
+import axios from 'https://cdn.jsdelivr.net/npm/axios@1.6.8/+esm';
+
+export async function initHeader() {
+    await fetchMemberInfo();
+    await fetchCategoryList();
+    openGroupByURL();
+    setActiveDashboardItem();
+    bindMenuLabelToggle();
+    bindAuthButtons();
+    bindAllDataLinks();
+}
+
 // 로그아웃 기능
 function handleLogout() {
     if (confirm('정말 로그아웃 하시겠습니까?')) {
         const logoutBtn = document.querySelector('.logout-btn');
-        const originalText = logoutBtn.textContent;
-
         const memberInfo = document.querySelector('.memberInfo');
         const loginBtn = document.querySelector('.login-btn');
+
         logoutBtn.textContent = '로그아웃 중...';
         logoutBtn.disabled = true;
         logoutBtn.classList.add('loading');
 
-        // JWT 토큰 삭제
         localStorage.removeItem('auth');
 
-        // UI 초기화
         memberInfo.style.display = 'none';
         logoutBtn.style.display = 'none';
         loginBtn.style.display = 'block';
 
         alert('로그아웃되었습니다.');
-        window.location.href = '/html/account/login.html'; // 또는 메인 페이지
+        window.location.href = '/html/account/login.html';
     }
 }
 
-
-// 로그인 페이지로 이동하는 함수
+// 로그인 페이지로 이동
 function handleLogin() {
     window.location.href = '/html/account/login.html';
 }
 
-// 사용자 정보 업데이트 함수
+// 사용자 정보 업데이트
 function updateUserInfo(userData) {
-    // 프로필 이미지 업데이트
-    const memberImgElement = document.querySelector('.memberImg img');
-    if (memberImgElement && userData.profileImg) {
-        memberImgElement.src = userData.profileImg;
-        memberImgElement.alt = `${userData.nickname || ''} 프로필 이미지`;
-    }
+    const imgEl  = document.querySelector('.memberImg img');
+    const goalEl = document.querySelector('.goal p');
+    const nameEl = document.querySelector('.memberName p');
 
-    // 목표(goal) 업데이트
-    const goalElement = document.querySelector('.goal p');
-    if (goalElement) {
-        goalElement.textContent = userData.goal || '유지';
+    if (imgEl && userData.profileImg) {
+        imgEl.src = userData.profileImg;
+        imgEl.alt = `${userData.nickname || ''} 프로필 이미지`;
     }
-
-    // 닉네임 업데이트
-    const nameElement = document.querySelector('.memberName p');
-    if (nameElement) {
-        const nickname = userData.nickname || '사용자';
-        nameElement.textContent = `하고 싶은 ${nickname}님`;
-    }
+    if (goalEl) goalEl.textContent = userData.goal || '유지';
+    if (nameEl) nameEl.textContent = `하고 싶은 ${userData.nickname || '사용자'}님`;
 }
 
 // 회원 정보 가져오기
 async function fetchMemberInfo() {
     const memberInfo = document.querySelector('.memberInfo');
-    const logoutBtn = document.querySelector('.logout-btn');
-    const loginBtn = document.querySelector('.login-btn');
+    const logoutBtn  = document.querySelector('.logout-btn');
+    const loginBtn   = document.querySelector('.login-btn');
 
     try {
-        const response = await axios.get('http://127.0.0.1:8881/api/account/member',{
-            headers: {
-                'selfitKosta': localStorage.auth
-            }
+        const response = await axios.get('http://127.0.0.1:8881/api/account/member', {
+            headers: { 'selfitKosta': localStorage.auth }
         });
-        const userData = response.data;
-        updateUserInfo(userData);
+        updateUserInfo(response.data);
 
-        console.log(userData)
-
-        // 로그인 상태 UI
         memberInfo.style.display = 'flex';
-        logoutBtn.style.display = 'block';
-        loginBtn.style.display = 'none';
-    } catch (error) {
-        // 비로그인 상태 UI
+        logoutBtn.style.display  = 'block';
+        loginBtn.style.display   = 'none';
+    } catch {
         memberInfo.style.display = 'none';
-        logoutBtn.style.display = 'none';
-        loginBtn.style.display = 'block';
-        console.error('회원 정보 조회 오류:', error);
+        logoutBtn.style.display  = 'none';
+        loginBtn.style.display   = 'block';
     }
 }
 
-function openGroupByURL() {
-    const currentPath = window.location.pathname + window.location.search;
-    let groupToOpen = null;
-
-    if (currentPath.startsWith('/dashboard/')) {
-        groupToOpen = 'dashboard';
-    } else if (
-        currentPath.startsWith('/board/list') ||
-        currentPath.startsWith('/board/detail')
-    ) {
-        groupToOpen = 'community';
-    }
-    // 필요하다면 다른 data-group 로직 추가 가능
-
-    if (groupToOpen) {
-        document.querySelectorAll('.menu-item.has-children').forEach(item => {
-            const group = item.getAttribute('data-group');
-            const submenu = item.querySelector('.submenu');
-
-            if (group === groupToOpen) {
-                item.classList.add('open', 'active');
-                if (submenu) submenu.style.maxHeight = submenu.scrollHeight + 'px';
-            } else {
-                item.classList.remove('open', 'active');
-                if (submenu) submenu.style.maxHeight = null;
+function bindAllDataLinks() {
+    // data-href 가 붙은 모든 요소에 click 이벤트를 걸자
+    document.querySelectorAll('[data-href]').forEach(el => {
+        el.style.cursor = 'pointer';
+        el.addEventListener('click', () => {
+            // SPA 내에서 community 쪽은 해시만 바꾸고
+            if (el.closest('[data-group="community"]')) {
+                const h = el.getAttribute('data-href').match(/categoryId=\d+/)[0];
+                location.hash = `/board/list?${h}`;
+            }
+            // 그 외에는 그냥 href 로 이동
+            else {
+                window.location.href = el.getAttribute('data-href');
             }
         });
-    }
+    });
 }
 
-// ─── 6) Dashboard 서브메뉴 중 현재 URL에 일치하는 항목에 active 붙이기 ─────────────
-function setActiveDashboardItem() {
-    const currentPath = window.location.pathname;
-    document.querySelectorAll('[data-group="dashboard"] .submenu-item').forEach(div => {
-        const a = div.querySelector('a');
-        if (!a) return;
-        // href와 currentPath가 일치하거나 startsWith 관계면 active
-        if (currentPath.startsWith(a.getAttribute('href'))) {
-            div.classList.add('active');
+// URL 기반 메뉴 그룹 열기
+function openGroupByURL() {
+    const path = window.location.pathname + window.location.hash;
+    document.querySelectorAll('.menu-item.has-children').forEach(item => {
+        const grp = item.dataset.group;
+        const sub = item.querySelector('.submenu');
+        if ((grp === 'community' && path.includes('/board/')) ||
+            (grp === 'dashboard' && path.startsWith('/dashboard/'))) {
+            item.classList.add('open','active');
+            if (sub) sub.style.maxHeight = sub.scrollHeight + 'px';
         } else {
-            div.classList.remove('active');
+            item.classList.remove('open','active');
+            if (sub) sub.style.maxHeight = null;
         }
     });
 }
 
-// ─── 7) Community 카테고리 목록 가져오기 + active 처리 ───────────────────────────
+// Dashboard 서브메뉴 active
+function setActiveDashboardItem() {
+    const path = window.location.pathname;
+    document.querySelectorAll('[data-group="dashboard"] .submenu-item').forEach(div => {
+        const a = div.querySelector('a');
+        if (!a) return;
+        div.classList.toggle('active', path.startsWith(a.getAttribute('href')));
+    });
+}
+
+// Community 카테고리 목록
 function fetchCategoryList() {
-    // axios.get(...)을 바로 반환하도록 수정
-    return axios.get('http://127.0.0.1:8881/api/category',{
-        headers: {
-            'selfitKosta': localStorage.auth
-        }
-    })
+    return axios.get('http://127.0.0.1:8881/api/category')
         .then(res => {
-            const categoryList = res.data;
-            const communityMenu = document.querySelector('[data-group="community"] .submenu');
-            if (!communityMenu) return;
+            const list = res.data;
+            const menu = document.querySelector('[data-group="community"] .submenu');
+            if (!menu) return;
+            menu.innerHTML = '';
 
-            communityMenu.innerHTML = ''; // 기존 비우고
-
-            categoryList.forEach(category => {
-                const div = document.createElement('div');
-                div.className = 'submenu-item';
-                div.textContent = category.categoryName;
-                div.addEventListener('click', () => {
-                    location.href = `/board/list?categoryId=${category.categoryId}`;
+            list.forEach(cat => {
+                const d = document.createElement('div');
+                d.className   = 'submenu-item';
+                d.textContent = cat.categoryName;
+                d.addEventListener('click', () => {
+                    const isStaticDashboard = window.location.pathname.includes('/dashboard/');
+                    if (isStaticDashboard) {
+                        // 일반 HTML 대시보드에서 SPA로 강제 이동
+                        window.location.href = `/html/spa.html#/board/list?categoryId=${cat.categoryId}`;
+                    } else {
+                        // SPA 내에서 해시만 바꿔서 뷰 전환
+                        location.hash = `/board/list?categoryId=${cat.categoryId}`;
+                    }
                 });
-                communityMenu.appendChild(div);
+                menu.appendChild(d);
             });
-
-            const selectEl = document.getElementById('categorySelect');
-            if (selectEl) {
-                selectEl.innerHTML = '<option value="">카테고리 선택</option>';
-                categoryList.forEach(cat => {
-                    const opt = document.createElement('option');
-                    opt.value = cat.categoryId;
-                    opt.textContent = cat.categoryName;
-                    selectEl.appendChild(opt);
-                });
-            }
         })
         .catch(err => {
             console.error('카테고리 불러오기 실패:', err);
         });
 }
 
-// ─── 8) 메뉴 레이블 토글 바인딩(클릭 시 open/close) ─────────────────────────────
+// 메뉴 레이블 토글
 function bindMenuLabelToggle() {
-    document.querySelectorAll('.menu-item.has-children .menu-label').forEach(label => {
-        label.addEventListener('click', () => {
-            const clickedItem = label.closest('.menu-item.has-children');
+    const sidebar = document.querySelector('.sideBar');
+    sidebar?.addEventListener('click', e => {
+        const label = e.target.closest('.menu-item.has-children .menu-label');
+        if (!label) return;
 
-            // 다른 열린 메뉴가 있다면 닫기
-            document.querySelectorAll('.menu-item.has-children').forEach(item => {
-                if (item === clickedItem) return;
-                const otherSub = item.querySelector('.submenu');
-                if (item.classList.contains('open')) {
-                    item.classList.remove('open', 'active');
-                    if (otherSub) otherSub.style.maxHeight = null;
-                }
-            });
+        const item = label.closest('.menu-item.has-children');
+        const sub  = item.querySelector('.submenu');
 
-            // 클릭한 메뉴는 토글(open <-> close)
-            const submenu = clickedItem.querySelector('.submenu');
-            if (clickedItem.classList.contains('open')) {
-                clickedItem.classList.remove('open', 'active');
-                if (submenu) submenu.style.maxHeight = null;
-            } else {
-                clickedItem.classList.add('open', 'active');
-                if (submenu) submenu.style.maxHeight = submenu.scrollHeight + 'px';
+        // 다른 열린 메뉴 닫기
+        document.querySelectorAll('.menu-item.has-children').forEach(other => {
+            if (other !== item) {
+                other.classList.remove('open','active');
+                other.querySelector('.submenu').style.maxHeight = null;
             }
         });
+
+        // 클릭한 메뉴 토글
+        const isOpen = item.classList.toggle('open');
+        item.classList.toggle('active', isOpen);
+        sub.style.maxHeight = isOpen ? sub.scrollHeight + 'px' : null;
     });
 }
 
-// ─── 9) DOMContentLoaded 이벤트 핸들러 ─────────────────────────────────────────
-    // (A) 사용자 정보 처리
-    fetchMemberInfo();
-
-    // (B) Community 카테고리 로드 → 완료 후에만 아래 로직 실행
-    fetchCategoryList().then(() => {
-        // (1) URL에 따라 상위 그룹 열기
-        openGroupByURL();
-
-        // (2) Dashboard 하위 메뉴 active 처리
-        setActiveDashboardItem();
-
-        // (3) 메뉴 레이블 클릭 토글 바인딩
-        bindMenuLabelToggle();
-    });
+// 로그인/로그아웃 버튼 바인딩
+function bindAuthButtons() {
+    document.querySelector('.logout-btn')?.addEventListener('click', handleLogout);
+    document.querySelector('.login-btn')?.addEventListener('click', handleLogin);
+}

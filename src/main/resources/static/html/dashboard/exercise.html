@@ -6,7 +6,10 @@
 
     <title>selfit - 건강 관리 서비스</title>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-    <script src="/js/layout-loader.js" defer></script>
+    <script type="module" defer>
+        import { initLayoutStatic } from '/js/layout-loader.js';
+        document.addEventListener('DOMContentLoaded', initLayoutStatic);
+    </script>
 
     <!-- CSS -->
     <link rel="stylesheet" href="/css/dashboard/exercise.css"/>
