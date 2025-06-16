@@ -51,9 +51,10 @@ let profileImageUpload = {
 
 async function getMemberInfoAPI() {
     try {
-        const response = await axios.get("http://127.0.0.1:8881/api/account/member", {
+        const response = await axios.get(`${API_BASE_URL}/member`, {
             timeout: 10000,
             headers: {
+                selfitKosta: `Bearer ${localStorage.auth}`,
                 Accept: "application/json",
                 "X-Requested-With": "XMLHttpRequest",
             },
@@ -77,6 +78,7 @@ async function checkNicknameDuplicateAPI(nickname) {
         const response = await axios.post(`${API_BASE_URL}/check-nickname`, requestData, {
             timeout: 10000,
             headers: {
+                selfitKosta: `Bearer ${localStorage.auth}`,
                 Accept: "application/json",
                 "X-Requested-With": "XMLHttpRequest",
                 "Content-Type": "application/json",
@@ -92,9 +94,10 @@ async function checkNicknameDuplicateAPI(nickname) {
 
 async function updateMemberAPI(userData) {
     try {
-        const response = await axios.put("http://127.0.0.1:8881/api/account/member", userData, {
+        const response = await axios.put(`${API_BASE_URL}/member`, userData, {
             timeout: 15000,
             headers: {
+                selfitKosta: `Bearer ${localStorage.auth}`,
                 Accept: "application/json",
                 "X-Requested-With": "XMLHttpRequest",
                 "Content-Type": "application/json",
@@ -647,7 +650,7 @@ async function handleSave() {
         const response = await updateMemberAPI(userData)
 
         if (response && response.success) {
-            showSuccessModal("회원정보가 수정되었습니다.", "/account/mypage", true)
+            showSuccessModal("회원정보가 수정되었습니다.", "/html/account/mypage.html", true)
         } else {
             showAlertModal("수정에 실패했습니다. 다시 시도해주세요.")
         }
