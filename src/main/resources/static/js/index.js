@@ -8,9 +8,9 @@ document.addEventListener('DOMContentLoaded', function () {
             const action = this.getAttribute('data-action');
 
             if (action === 'dashboard') {
-                window.location.href = '/dashboard';
+                window.location.href = 'dashboard/dashboard.html';
             } else if (action === 'community') {
-                window.location.href = '/board/list';
+                window.location.href = 'board/board.html';
             }
         });
     });
