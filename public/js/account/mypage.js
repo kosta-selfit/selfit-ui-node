@@ -3,7 +3,7 @@ import {showAlertModal, showSuccessModal, showErrorModal} from './basic-modal.js
 $(() => {
     // API 기본 경로 설정
     var board_api_base = '/board/detail';
-    const baseUrl = 'http://127.0.0.1:8881'
+    const baseUrl = 'http://54.180.249.146:8881'
 
     // 북마크 데이터와 페이지네이션 변수
     let bookmarkData = [];

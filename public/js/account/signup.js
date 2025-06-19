@@ -1,7 +1,7 @@
 import {showAlertModal, showErrorModal, showSuccessModal} from './basic-modal.js';
 
 // API 엔드포인트 설정
-const API_BASE_URL = "http://127.0.0.1:8881/api/account"
+const API_BASE_URL = "http://54.180.249.146:8881/api/account"
 const redirect_url = "http://127.0.0.1:8880/html/dashboard/dashboard.html"
 // 폼 상태 관리 (안전한 초기화)
 const formState = {
@@ -617,7 +617,7 @@ async function handleSignup() {
         const response = await signupAPI(userData)
 
         if (response.success) {
-            axios.post('http://127.0.0.1:8881/api/account/login-process', {
+            axios.post('http://54.180.249.146:8881/api/account/login-process', {
                 email: userData.email,
                 pw: userData.password,
                 memberType: userData.memberType

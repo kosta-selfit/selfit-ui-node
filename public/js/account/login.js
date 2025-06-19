@@ -102,7 +102,7 @@ $(document).ready(() => {
 
         // Axios 요청 (form-urlencoded 전송)
         axios
-            .post("http://127.0.0.1:8881/api/account/login-process", {
+            .post("http://54.180.249.146:8881/api/account/login-process", {
                 email: loginId,
                 pw: loginPassword,
             })
