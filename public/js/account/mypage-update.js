@@ -3,7 +3,7 @@ import {getDownloadURL, ref, uploadBytes} from "https://www.gstatic.com/firebase
 import {storage} from "../board/firebaseConfig.js";
 
 // API 엔드포인트 설정
-const API_BASE_URL = "http://127.0.0.1:8881/api/account"
+const API_BASE_URL = "http://54.180.249.146:8881/api/account"
 
 // 폼 상태 관리 - 원본 데이터와 현재 데이터 분리
 const originalData = {

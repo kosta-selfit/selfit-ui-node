@@ -5,7 +5,7 @@ import { initHeader } from '/js/header.js';
 // 내부: layout.html 조각을 가져와 header와 sidebar에 삽입하고, header.js를 로드하여 initHeader() 호출
 async function loadLayoutFragment() {
     try {
-        const res = await axios.get('http://127.0.0.1:8880/html/fragments/layout.html');
+        const res = await axios.get('http://54.180.249.146:8880/html/fragments/layout.html');
         const doc = new DOMParser().parseFromString(res.data, 'text/html');
 
         const headerEl = document.querySelector('#header');

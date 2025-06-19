@@ -58,7 +58,7 @@ async function fetchMemberInfo() {
     const loginBtn   = document.querySelector('.login-btn');
 
     try {
-        const response = await axios.get('http://127.0.0.1:8881/api/account/member', {
+        const response = await axios.get('http://54.180.249.146:8881/api/account/member', {
             headers: { 'selfitKosta': localStorage.auth }
         });
         updateUserInfo(response.data);
@@ -120,7 +120,7 @@ function setActiveDashboardItem() {
 
 // Community 카테고리 목록
 function fetchCategoryList() {
-    return axios.get('http://127.0.0.1:8881/api/category')
+    return axios.get('http://54.180.249.146:8881/api/category')
         .then(res => {
             const list = res.data;
             const menu = document.querySelector('[data-group="community"] .submenu');

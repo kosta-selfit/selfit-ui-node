@@ -9,7 +9,7 @@ const token = localStorage.getItem('auth');
 // 카테고리 셀렉트 채우기
 async function populateCategorySelect(selectedId = null) {
     try {
-        const res = await axios.get('http://127.0.0.1:8881/api/category');
+        const res = await axios.get('http://54.180.249.146:8881/api/category');
         const list = res.data;
         console.log('카테고리 목록:', list);
         const select = document.getElementById('categorySelect');
@@ -71,7 +71,7 @@ function parseHashParams() {
 
         // 기존 글 불러오기
         try {
-            const res   = await axios.get(`http://127.0.0.1:8881/api/board/${boardId}`, {
+            const res   = await axios.get(`http://54.180.249.146:8881/api/board/${boardId}`, {
                 headers: { selfitKosta: token ? `Bearer ${token}` : '' }
             });
             const b   = res.data.board;
@@ -120,7 +120,7 @@ function parseHashParams() {
             };
 
             try {
-                await axios.put(`http://127.0.0.1:8881/api/board/edit/${boardId}`, payload, {
+                await axios.put(`http://54.180.249.146:8881/api/board/edit/${boardId}`, payload, {
                     headers: { selfitKosta: `Bearer ${token}` }
                 });
                 alert('글이 수정되었습니다.');
@@ -164,7 +164,7 @@ function parseHashParams() {
             };
 
             try {
-                await axios.post('http://127.0.0.1:8881/api/board/add', payload, {
+                await axios.post('http://54.180.249.146:8881/api/board/add', payload, {
                     headers: { selfitKosta: `Bearer ${token}` }
                 });
                 alert('게시글 등록 성공');
