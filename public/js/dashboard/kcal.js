@@ -1,5 +1,10 @@
 // kcal.js
-
+document.addEventListener('DOMContentLoaded', () => {
+    const auth = localStorage.getItem('auth');
+    if (auth === null) {
+        location.replace('/html/account/login.html');
+    }
+});
 // -----------------------------
 // 1) 공통: Axios 기본 설정
 // -----------------------------
