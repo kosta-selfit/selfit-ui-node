@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
             if (action === 'dashboard') {
 
-                window.location.href = 'html/dashboard/dashboard.html';
+                window.location.href = '/dashboard/dashboard.html';
 
             } else if (action === 'community') {
                 // 1) API에서 카테고리 목록 받아오기
