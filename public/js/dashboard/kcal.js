@@ -1,5 +1,10 @@
 // kcal.js
-
+document.addEventListener('DOMContentLoaded', () => {
+    const auth = localStorage.getItem('auth');
+    if (auth === null) {
+        location.replace('/html/account/login.html');
+    }
+});
 // -----------------------------
 // 1) 공통: Axios 기본 설정
 // -----------------------------
@@ -42,7 +47,7 @@ axios.defaults.withCredentials = true;
 async function fetchBmr() {
     try {
         const res = await axios.post(
-            "http://127.0.0.1:8881/api/dashboard/bmr",
+            "http://54.180.249.146:8881/api/dashboard/bmr",
             {},
             {
                 headers: {
@@ -64,7 +69,7 @@ async function fetchBmr() {
 // --------------------------------------------------
 async function fetchYearIntake(year) {
     try {
-        const res = await axios.post("http://127.0.0.1:8881/api/dashboard/food/kcal/year", {
+        const res = await axios.post("http://54.180.249.146:8881/api/dashboard/food/kcal/year", {
             intakeYear: year,
         },{
                 headers: {
@@ -81,7 +86,7 @@ async function fetchYearIntake(year) {
 
 async function fetchYearExercise(year) {
     try {
-        const res = await axios.post("http://127.0.0.1:8881/api/dashboard/exercise/kcal/year", {
+        const res = await axios.post("http://54.180.249.146:8881/api/dashboard/exercise/kcal/year", {
             exerciseYear: year,
         },{
                 headers: {
@@ -101,7 +106,7 @@ async function fetchYearExercise(year) {
 // --------------------------------------------------
 async function fetchDateIntake(dateStr) {
     try {
-        const res = await axios.post("http://127.0.0.1:8881/api/dashboard/food/kcal", {
+        const res = await axios.post("http://54.180.249.146:8881/api/dashboard/food/kcal", {
             intakeDate: dateStr,
         },{
                 headers: {
@@ -118,7 +123,7 @@ async function fetchDateIntake(dateStr) {
 
 async function fetchDateExercise(dateStr) {
     try {
-        const res = await axios.post("http://127.0.0.1:8881/api/dashboard/exercise/kcal", {
+        const res = await axios.post("http://54.180.249.146:8881/api/dashboard/exercise/kcal", {
             exerciseDate: dateStr,
         },{
                 headers: {

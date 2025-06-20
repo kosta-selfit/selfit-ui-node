@@ -7,11 +7,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
             if (action === 'dashboard') {
 
-                window.location.href = '/dashboard';
+                window.location.href = 'dashboard/dashboard.html';
 
             } else if (action === 'community') {
                 // 1) API에서 카테고리 목록 받아오기
-                axios.get('http://127.0.0.1:8881/api/category')
+                axios.get('http://54.180.249.146:8881/api/category')
                     .then(res => {
                         const categories = res.data;
                         if (!categories.length) {

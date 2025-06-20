@@ -9,8 +9,10 @@ let itemToDeleteIndex = null;
 
 // Axios 기본 설정
 const token = localStorage.getItem('auth');
-
-axios.defaults.baseURL = 'http://127.0.0.1:8881';
+if ( token === null ) {
+    location.replace('/html/account/login.html');
+}
+axios.defaults.baseURL = 'http://54.180.249.146:8881';
 axios.defaults.headers.common['selfitKosta'] = `Bearer ${token}`;
 axios.defaults.headers.common['Content-Type'] = 'application/json';
 axios.defaults.withCredentials = true;

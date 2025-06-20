@@ -1,5 +1,11 @@
 // food.js (백엔드 연동 통합 버전, 수정판)
 
+document.addEventListener('DOMContentLoaded', () => {
+    const auth = localStorage.getItem('auth');
+    if (auth === null) {
+        location.replace('/html/account/login.html');
+    }
+});
 // -----------------------------
 // Axios 기본 설정
 // -----------------------------
@@ -63,7 +69,7 @@ const listEl = document.getElementById('autocomplete-list');
     }
 
     function fetchYearlyIntake(year) {
-        return axios.post('http://127.0.0.1:8881/api/dashboard/food/kcal/year', { intakeYear: year },
+        return axios.post('http://54.180.249.146:8881/api/dashboard/food/kcal/year', { intakeYear: year },
             {
                 headers: {
                     'selfitKosta': localStorage.auth
@@ -219,7 +225,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 while (cursor < endDate) {
                     const dateStr = cursor.toISOString().split('T')[0];
                     const req = axios
-                        .post('http://127.0.0.1:8881/api/dashboard/food/kcal', { intakeDate: dateStr },
+                        .post('http://54.180.249.146:8881/api/dashboard/food/kcal', { intakeDate: dateStr },
                             {
                                 headers: {
                                     'selfitKosta': localStorage.auth
@@ -279,7 +285,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
             // (3) 식단 노트 생성/조회 (POST /api/dashboard/food/list)
             try {
-                const noteRes = await axios.post('http://127.0.0.1:8881/api/dashboard/food/list', {
+                const noteRes = await axios.post('http://54.180.249.146:8881/api/dashboard/food/list', {
                     intakeDate: selectedDate
                 },{
                         headers: {
@@ -301,7 +307,7 @@ document.addEventListener('DOMContentLoaded', function () {
             // (4) 해당 날짜 식단 목록 조회 (POST /api/dashboard/foods)
             let totalForClickedDay = 0;
             try {
-                const resp = await axios.post('http://127.0.0.1:8881/api/dashboard/foods', {
+                const resp = await axios.post('http://54.180.249.146:8881/api/dashboard/foods', {
                     intakeDate: selectedDate
                 },
                     {
@@ -378,7 +384,7 @@ nameInput.addEventListener('input', async function () {
     }
 
     try {
-        const res = await axios.post('http://127.0.0.1:8881/api/dashboard/food/openSearch', {
+        const res = await axios.post('http://54.180.249.146:8881/api/dashboard/food/openSearch', {
             keyword: keyword,
             pageNo:  1,
             numOfRows: 100
@@ -500,7 +506,7 @@ document.getElementById('add-food-btn').addEventListener('click', async function
         const item = foodList[editIndex];
         try {
             // PUT /api/dashboard/food
-            await axios.put('http://127.0.0.1:8881/api/dashboard/food', {
+            await axios.put('http://54.180.249.146:8881/api/dashboard/food', {
                 foodInfoId: item.foodInfoId,
                 newIntake:  amount
             },{
@@ -551,7 +557,7 @@ document.getElementById('add-food-btn').addEventListener('click', async function
             }
 
             // POST /api/dashboard/food
-            await axios.post('http://127.0.0.1:8881/api/dashboard/food', {
+            await axios.post('http://54.180.249.146:8881/api/dashboard/food', {
                 foodNoteId: foodNoteId,
                 foodName:   name,
                 intake:     amount,
@@ -671,7 +677,7 @@ document.getElementById('confirm-delete-btn').addEventListener('click', async fu
     const item = foodList[itemToDelete];
     try {
         // DELETE /api/dashboard/food
-        await axios.delete('http://127.0.0.1:8881/api/dashboard/food', {
+        await axios.delete('http://54.180.249.146:8881/api/dashboard/food', {
             headers: {
                 'selfitKosta': localStorage.auth
             },

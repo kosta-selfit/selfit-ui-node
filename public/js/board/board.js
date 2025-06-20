@@ -1,7 +1,7 @@
 import axios from 'https://cdn.jsdelivr.net/npm/axios@1.6.8/+esm';
 console.log('board.js 진입');
 
-axios.defaults.baseURL = 'http://127.0.0.1:8881';
+axios.defaults.baseURL = 'http://54.180.249.146:8881';
 axios.defaults.headers.common['Content-Type'] = 'application/json';
 
 (async function initBoard() {

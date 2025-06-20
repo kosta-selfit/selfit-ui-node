@@ -2,7 +2,7 @@
 $(document).ready(() => {
     // 로그인 버튼 클릭 이벤트
 
-    const redirect_url = "http://127.0.0.1:8880/html/dashboard/dashboard.html"
+    const redirect_url = "http://54.180.249.146:8880/html/dashboard/dashboard.html"
     $("#loginBtn").on("click", () => {
         handleLogin()
     })
@@ -102,7 +102,7 @@ $(document).ready(() => {
 
         // Axios 요청 (form-urlencoded 전송)
         axios
-            .post("http://127.0.0.1:8881/api/account/login-process", {
+            .post("http://54.180.249.146:8881/api/account/login-process", {
                 email: loginId,
                 pw: loginPassword,
             })
